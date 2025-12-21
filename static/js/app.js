@@ -44,9 +44,7 @@ class App {
                 statusText: document.getElementById('kong-status-text'),
                 lists: {
                     services: document.getElementById('kong-services-list'),
-                    routes: document.getElementById('kong-routes-list'),
-                    consumers: document.getElementById('kong-consumers-list'),
-                    plugins: document.getElementById('kong-plugins-list')
+                    consumers: document.getElementById('kong-consumers-list')
                 },
                 stats: {
                     services: document.getElementById('kong-services-count'),
@@ -246,12 +244,29 @@ class App {
             this.updateKongStatus(status);
 
             if (status.connected) {
-                await Promise.all([
-                    this.refreshKongServices(),
-                    this.refreshKongRoutes(),
-                    this.refreshKongConsumers(),
-                    this.refreshKongPlugins()
+                // Fetch all data
+                const [services, routes, consumers, plugins] = await Promise.all([
+                    fetch(`${API_BASE}/kong/services`).then(r => r.json()),
+                    fetch(`${API_BASE}/kong/routes`).then(r => r.json()),
+                    fetch(`${API_BASE}/kong/consumers`).then(r => r.json()),
+                    fetch(`${API_BASE}/kong/plugins`).then(r => r.json())
                 ]);
+
+                // Update Stats
+                this.dom.kong.stats.services.textContent = services.data.length;
+                this.dom.kong.stats.routes.textContent = routes.data.length;
+                this.dom.kong.stats.consumers.textContent = consumers.data.length;
+                this.dom.kong.stats.plugins.textContent = plugins.data.length;
+
+                // Render Master-Detail Views
+                this.renderKongServices(services.data, routes.data);
+                this.renderKongConsumers(consumers.data, plugins.data);
+
+                // Update Selects
+                this.updateSelect('route-service-select', services.data, 'name', 'id');
+                this.updateSelect('plugin-service-select', services.data, 'name', 'id');
+                this.updateSelect('plugin-consumer-select', consumers.data, 'username', 'id', true); // true for optional empty option
+
             }
         } catch (e) {
             console.error('Failed to refresh Kong:', e);
@@ -273,12 +288,99 @@ class App {
         }
     }
 
+    renderKongServices(services, routes) {
+        const container = this.dom.kong.lists.services;
+        if (!services || services.length === 0) {
+            container.innerHTML = '<div class="text-center py-4 text-secondary">No services found</div>';
+            return;
+        }
+
+        container.innerHTML = services.map(service => {
+            // Find routes for this service (assuming route.service.id matches service.id)
+            const serviceRoutes = routes.filter(r => r.service && r.service.id === service.id);
+
+            const routesHtml = serviceRoutes.map(route => `
+                <div class="nested-item">
+                     <div class="flex items-center justify-between">
+                        <div>
+                            <div class="font-mono text-xs text-accent-primary">🛤️ ${(route.paths || []).join(', ')}</div>
+                            <div class="text-xs text-secondary">${route.name || route.id}</div>
+                        </div>
+                        <button class="btn btn-secondary text-xs" onclick="app.deleteKongItem('route', '${route.id}')">Delete</button>
+                     </div>
+                </div>
+            `).join('');
+
+            return `
+            <div class="list-item master-item">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="font-semibold text-lg">🔌 ${service.name}</div>
+                        <div class="text-xs text-secondary">${service.host}:${service.port}${service.path || ''}</div>
+                    </div>
+                    <div class="flex gap-2">
+                         <button class="btn btn-sm btn-primary" onclick="app.openRouteForm('${service.id}', '${service.name}')">+ Route</button>
+                         <button class="btn btn-sm btn-secondary" onclick="app.deleteKongItem('service', '${service.id}')">Delete</button>
+                    </div>
+                </div>
+                <div class="nested-container">
+                    ${routesHtml}
+                </div>
+            </div>
+            `;
+        }).join('');
+    }
+
+    renderKongConsumers(consumers, plugins) {
+        const container = this.dom.kong.lists.consumers;
+        if (!consumers || consumers.length === 0) {
+            container.innerHTML = '<div class="text-center py-4 text-secondary">No consumers found</div>';
+            return;
+        }
+
+        container.innerHTML = consumers.map(consumer => {
+            // Find plugins for this consumer (assuming plugin.consumer.id matches consumer.id)
+            // Note: Plugin structure usually has consumer: { id: ... } if it's consumer-scoped.
+            const consumerPlugins = plugins.filter(p => p.consumer && p.consumer.id === consumer.id);
+
+            const pluginsHtml = consumerPlugins.map(plugin => `
+                 <div class="nested-item">
+                     <div class="flex items-center justify-between">
+                        <div>
+                            <div class="font-mono text-xs text-accent-secondary">🔌 ${plugin.name}</div>
+                            <div class="text-xs text-secondary">${plugin.enabled ? 'Enabled' : 'Disabled'}</div>
+                        </div>
+                        <button class="btn btn-secondary text-xs" onclick="app.deleteKongItem('plugin', '${plugin.id}')">Delete</button>
+                     </div>
+                </div>
+            `).join('');
+
+            return `
+            <div class="list-item master-item">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="font-semibold text-lg">👤 ${consumer.username || consumer.custom_id}</div>
+                        <div class="text-xs text-secondary">${consumer.id}</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="btn btn-sm btn-primary" onclick="app.openPluginForm('${consumer.id}', '${consumer.username}')">+ Plugin</button>
+                        <button class="btn btn-sm btn-secondary" onclick="app.deleteKongItem('consumer', '${consumer.id}')">Delete</button>
+                    </div>
+                </div>
+                 <div class="nested-container">
+                    ${pluginsHtml}
+                </div>
+            </div>
+            `;
+        }).join('');
+    }
+
     async refreshKongServices() {
         const data = await fetch(`${API_BASE}/kong/services`).then(r => r.json());
         this.dom.kong.stats.services.textContent = data.data.length;
         this.renderKongList(this.dom.kong.lists.services, data.data, 'service');
-        this.updateSelect('route-service', data.data, 'name', 'id');
-        this.updateSelect('plugin-service', data.data, 'name', 'id');
+        this.updateSelect('route-service-select', data.data, 'name', 'id');
+        this.updateSelect('plugin-service-select', data.data, 'name', 'id');
     }
 
     async refreshKongRoutes() {
@@ -291,6 +393,7 @@ class App {
         const data = await fetch(`${API_BASE}/kong/consumers`).then(r => r.json());
         this.dom.kong.stats.consumers.textContent = data.data.length;
         this.renderKongList(this.dom.kong.lists.consumers, data.data, 'consumer');
+        this.updateSelect('plugin-consumer-select', data.data, 'username', 'id', true);
     }
 
     async refreshKongPlugins() {
@@ -328,6 +431,27 @@ class App {
         }).join('');
     }
 
+    // --- Form Openers ---
+    openServiceForm() {
+        this.toggleForm('service-form');
+    }
+
+    openConsumerForm() {
+        this.toggleForm('consumer-form');
+    }
+
+    openRouteForm(serviceId, serviceName) {
+        if (serviceId) document.getElementById('route-service-select').value = serviceId;
+        document.getElementById('route-service-name-disp').textContent = serviceName || 'New Route';
+        document.getElementById('route-form').classList.remove('hidden');
+    }
+
+    openPluginForm(consumerId, consumerName) {
+        if (consumerId) document.getElementById('plugin-consumer-select').value = consumerId;
+        document.getElementById('plugin-consumer-name-disp').textContent = consumerName || 'Global/Service';
+        document.getElementById('plugin-form').classList.remove('hidden');
+    }
+
     async createService() {
         const name = document.getElementById('service-name').value;
         const url = document.getElementById('service-url').value;
@@ -341,14 +465,15 @@ class App {
             });
             this.showToast('Service created', 'success');
             this.toggleForm('service-form');
-            this.refreshKongServices();
+            this.refreshKong();
         } catch (e) {
             this.showToast('Failed to create service', 'error');
         }
     }
 
     async createRoute() {
-        const serviceId = document.getElementById('route-service').value;
+        const serviceId = document.getElementById('route-service-select').value;
+        if (!serviceId) return this.showToast('Service is required', 'error');
         const name = document.getElementById('route-name').value;
         const path = document.getElementById('route-path').value;
 
@@ -360,7 +485,8 @@ class App {
             });
             this.showToast('Route created', 'success');
             this.toggleForm('route-form');
-            this.refreshKongRoutes();
+            // Removed refreshKongRoutes as we refresh all
+            this.refreshKong();
         } catch (e) {
             this.showToast('Failed to create route', 'error');
         }
@@ -382,6 +508,36 @@ class App {
         }
     }
 
+    async createPlugin() {
+        const name = document.getElementById('plugin-name').value;
+        const consumerId = document.getElementById('plugin-consumer-select').value;
+        const serviceId = document.getElementById('plugin-service-select').value;
+
+        let url = `${API_BASE}/kong/plugins`;
+        // If associated with a consumer, we might want to POST to /consumers/:id/plugins 
+        // OR /plugins with consumer_id in body. 
+        // Kong Admin API supports POST /plugins with consumer={id: ...} or service={id: ...} in body
+        // or POST /consumers/:id/plugins or POST /services/:id/plugins
+
+        let body = { name };
+        if (consumerId) body.consumer = { id: consumerId };
+        if (serviceId) body.service = { id: serviceId };
+
+        try {
+            await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            this.showToast('Plugin created', 'success');
+            this.toggleForm('plugin-form');
+            this.refreshKong();
+        } catch (e) {
+            console.error(e);
+            this.showToast('Failed to create plugin', 'error');
+        }
+    }
+
     // Generic helpers
     toggleForm(id) {
         const el = document.getElementById(id);
@@ -392,10 +548,12 @@ class App {
         }
     }
 
-    updateSelect(id, items, textKey, valueKey) {
+    updateSelect(id, items, textKey, valueKey, allowEmpty = false) {
         const select = document.getElementById(id);
         if (!select) return;
-        select.innerHTML = items.map(i => `<option value="${i[valueKey]}">${i[textKey]}</option>`).join('');
+        let html = allowEmpty ? '<option value="">(None)</option>' : '';
+        html += items.map(i => `<option value="${i[valueKey]}">${i[textKey] || i.username || i.id}</option>`).join('');
+        select.innerHTML = html;
     }
 
     async deleteKongItem(type, id) {

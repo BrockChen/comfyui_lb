@@ -149,13 +149,16 @@
             </div>
 
             <div class="grid-2">
-                <!-- Services -->
+                <!-- Services & Routes -->
                 <div class="glass glass-panel">
                     <div class="panel-header">
-                        <div class="panel-title"><span>🔌</span> Services</div>
-                        <button class="btn btn-primary" onclick="app.toggleForm('service-form')">+ Add</button>
+                        <div class="panel-title"><span>🔌</span> Services & Routes</div>
+                        <button class="btn btn-primary" onclick="app.openServiceForm()">+ Add Service</button>
                     </div>
+
+                    <!-- Forms -->
                     <div class="form-panel hidden" id="service-form">
+                        <div class="form-header">Add Service</div>
                         <div class="form-grid">
                             <div class="form-group">
                                 <label>Name</label>
@@ -172,22 +175,13 @@
                             <button class="btn btn-primary" onclick="app.createService()">Create</button>
                         </div>
                     </div>
-                    <div class="panel-body" id="kong-services-list">
-                        <div class="text-center text-secondary">Loading...</div>
-                    </div>
-                </div>
 
-                <!-- Routes -->
-                <div class="glass glass-panel">
-                    <div class="panel-header">
-                        <div class="panel-title"><span>🛤️</span> Routes</div>
-                        <button class="btn btn-primary" onclick="app.toggleForm('route-form')">+ Add</button>
-                    </div>
                     <div class="form-panel hidden" id="route-form">
+                        <div class="form-header">Add Route for <span id="route-service-name-disp"></span></div>
                         <div class="form-grid">
                             <div class="form-group">
                                 <label>Service</label>
-                                <select id="route-service" class="form-input"></select>
+                                <select id="route-service-select" class="form-input"></select>
                             </div>
                             <div class="form-group">
                                 <label>Name</label>
@@ -203,18 +197,22 @@
                             <button class="btn btn-primary" onclick="app.createRoute()">Create</button>
                         </div>
                     </div>
-                    <div class="panel-body" id="kong-routes-list">
+
+                    <div class="panel-body" id="kong-services-list">
                         <div class="text-center text-secondary">Loading...</div>
                     </div>
                 </div>
 
-                <!-- Consumers -->
+                <!-- Consumers & Plugins -->
                 <div class="glass glass-panel">
                     <div class="panel-header">
-                        <div class="panel-title"><span>👤</span> Consumers</div>
-                        <button class="btn btn-primary" onclick="app.toggleForm('consumer-form')">+ Add</button>
+                        <div class="panel-title"><span>👤</span> Consumers & Plugins</div>
+                        <button class="btn btn-primary" onclick="app.openConsumerForm()">+ Add Consumer</button>
                     </div>
+
+                    <!-- Forms -->
                     <div class="form-panel hidden" id="consumer-form">
+                        <div class="form-header">Add Consumer</div>
                         <div class="form-grid">
                             <div class="form-group">
                                 <label>Username</label>
@@ -226,22 +224,21 @@
                             <button class="btn btn-primary" onclick="app.createConsumer()">Create</button>
                         </div>
                     </div>
-                    <div class="panel-body" id="kong-consumers-list">
-                        <div class="text-center text-secondary">Loading...</div>
-                    </div>
-                </div>
 
-                <!-- Plugins -->
-                <div class="glass glass-panel">
-                    <div class="panel-header">
-                        <div class="panel-title"><span>🔌</span> Plugins</div>
-                        <button class="btn btn-primary" onclick="app.toggleForm('plugin-form')">+ Add</button>
-                    </div>
                     <div class="form-panel hidden" id="plugin-form">
+                        <div class="form-header">Add Plugin for <span id="plugin-consumer-name-disp"></span></div>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label>Service</label>
-                                <select id="plugin-service" class="form-input"></select>
+                                <label>Consumer (Optional)</label>
+                                <select id="plugin-consumer-select" class="form-input">
+                                    <option value="">Global (No Consumer)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Service (Optional)</label>
+                                <select id="plugin-service-select" class="form-input">
+                                    <option value="">Global (No Service)</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label>Plugin</label>
@@ -258,7 +255,8 @@
                             <button class="btn btn-primary" onclick="app.createPlugin()">Create</button>
                         </div>
                     </div>
-                    <div class="panel-body" id="kong-plugins-list">
+
+                    <div class="panel-body" id="kong-consumers-list">
                         <div class="text-center text-secondary">Loading...</div>
                     </div>
                 </div>

@@ -291,6 +291,11 @@ header {
     background: rgba(255, 255, 255, 0.1);
 }
 
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
 /* Animations */
 @keyframes fadeIn {
     from {
@@ -362,6 +367,13 @@ header {
     padding: 1.5rem;
     background: rgba(0, 0, 0, 0.2);
     border-bottom: 1px solid var(--glass-border);
+}
+
+.form-header {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
 }
 
 .form-grid {
