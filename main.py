@@ -6,9 +6,13 @@ import logging
 import argparse
 from contextlib import asynccontextmanager
 
+from pathlib import Path
+
 import uvicorn
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 from config import load_config, Settings
 from backend_manager import BackendManager
@@ -117,6 +121,7 @@ async def lifespan(app: FastAPI):
     logger.info("=" * 50)
     logger.info("ComfyUI 负载均衡器已启动")
     logger.info(f"监听地址: {settings.server.host}:{settings.server.port}")
+    logger.info(f"管理界面: http://localhost:{settings.server.port}/")
     logger.info(f"后端数量: {len(settings.backends)}")
     logger.info(f"调度策略: {settings.scheduler.strategy}")
     logger.info("=" * 50)
@@ -167,6 +172,16 @@ def create_app(settings: Settings = None) -> FastAPI:
     @app.get("/health")
     async def health():
         return {"status": "ok"}
+    
+    # 静态文件和管理界面
+    static_dir = Path(__file__).parent / "static"
+    if static_dir.exists():
+        app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+        
+        @app.get("/")
+        async def index():
+            """管理界面"""
+            return FileResponse(static_dir / "index.html")
     
     return app
 
@@ -231,4 +246,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 

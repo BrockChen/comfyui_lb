@@ -396,3 +396,4 @@ async def set_scheduler_strategy(request: Request, strategy: str) -> dict:
     state.scheduler.set_strategy(strategy)
     return {"success": True, "strategy": strategy}
 
+

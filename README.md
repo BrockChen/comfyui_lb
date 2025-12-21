@@ -56,7 +56,8 @@ python main.py -c config.yaml -H 0.0.0.0 -p 8100
 
 ### 4. 使用
 
-将你的 ComfyUI 客户端指向负载均衡器地址 (默认: `http://localhost:8100`)
+- **管理界面**: 打开 `http://localhost:8100/` 查看实时状态和管理后端
+- **API 接入**: 将你的 ComfyUI 客户端指向负载均衡器地址 `http://localhost:8100`
 
 ## API 文档
 
@@ -196,4 +197,5 @@ backends:
 ## License
 
 MIT
+
 

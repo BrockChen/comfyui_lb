@@ -99,3 +99,4 @@ def load_config(config_path: Optional[str] = None) -> Settings:
     
     return Settings()
 
+
