@@ -20,7 +20,9 @@ from scheduler import Scheduler
 from task_queue import TaskQueue
 from health_checker import HealthChecker
 from api.routes import router
+from api.kong_routes import router as kong_router
 from api.websocket import WebSocketManager, websocket_endpoint
+from kong_manager import KongManager
 
 # 配置日志
 logging.basicConfig(
@@ -111,6 +113,18 @@ async def lifespan(app: FastAPI):
     ws_manager = WebSocketManager()
     app.state.ws_manager = ws_manager
     
+    # 初始化Kong管理器
+    if settings.kong.enabled:
+        kong_manager = KongManager(
+            admin_url=settings.kong.admin_url,
+            timeout=settings.kong.timeout
+        )
+        await kong_manager.initialize()
+        app.state.kong_manager = kong_manager
+        logger.info(f"Kong 管理器已启用: {settings.kong.admin_url}")
+    else:
+        app.state.kong_manager = None
+    
     # 启动服务
     await health_checker.start()
     await task_queue.start()
@@ -132,6 +146,10 @@ async def lifespan(app: FastAPI):
     await task_queue.stop()
     await health_checker.stop()
     await backend_manager.shutdown()
+    
+    # 关闭Kong管理器
+    if app.state.kong_manager:
+        await app.state.kong_manager.shutdown()
     
     logger.info("ComfyUI 负载均衡器已停止")
 
@@ -162,6 +180,7 @@ def create_app(settings: Settings = None) -> FastAPI:
     
     # 注册路由
     app.include_router(router)
+    app.include_router(kong_router)
     
     # WebSocket端点
     @app.websocket("/ws")

@@ -33,6 +33,15 @@ queue:
   # 最大重试次数
   max_retries: 3
 
+# Kong 网关配置
+kong:
+  # 是否启用 Kong 管理功能
+  enabled: true
+  # Kong Admin API 地址
+  admin_url: "http://192.168.2.9:8001"
+  # 请求超时时间(秒)
+  timeout: 10.0
+
 # 后端ComfyUI实例配置
 # 根据你的实际情况修改
 backends:

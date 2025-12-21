@@ -57,12 +57,20 @@ class ServerConfig(BaseModel):
     debug: bool = Field(default=False, description="调试模式")
 
 
+class KongConfig(BaseModel):
+    """Kong 网关配置"""
+    enabled: bool = Field(default=False, description="是否启用 Kong 管理")
+    admin_url: str = Field(default="http://127.0.0.1:8001", description="Kong Admin API 地址")
+    timeout: float = Field(default=10.0, description="请求超时时间(秒)")
+
+
 class Settings(BaseSettings):
     """全局设置"""
     server: ServerConfig = Field(default_factory=ServerConfig)
     scheduler: SchedulerConfig = Field(default_factory=SchedulerConfig)
     health_check: HealthCheckConfig = Field(default_factory=HealthCheckConfig)
     queue: QueueConfig = Field(default_factory=QueueConfig)
+    kong: KongConfig = Field(default_factory=KongConfig)
     backends: list[BackendConfig] = Field(default_factory=list)
 
     class Config:
