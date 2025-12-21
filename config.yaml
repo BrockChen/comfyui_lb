@@ -1,0 +1,60 @@
+# ComfyUI 负载均衡器配置文件
+
+# 服务器配置
+server:
+  host: "0.0.0.0"
+  port: 8100
+  debug: false
+
+# 调度器配置
+scheduler:
+  # 调度策略: least_busy(最少忙碌), round_robin(轮询), weighted(加权)
+  strategy: "least_busy"
+  # 优先选择完全空闲的实例
+  prefer_idle: true
+
+# 健康检查配置
+health_check:
+  # 检查间隔(秒)
+  interval: 5.0
+  # 超时时间(秒)
+  timeout: 3.0
+  # 连续失败多少次标记为不健康
+  unhealthy_threshold: 3
+  # 连续成功多少次标记为健康
+  healthy_threshold: 1
+
+# 任务队列配置
+queue:
+  # 最大队列大小
+  max_size: 1000
+  # 重试间隔(秒)
+  retry_interval: 1.0
+  # 最大重试次数
+  max_retries: 3
+
+# 后端ComfyUI实例配置
+# 根据你的实际情况修改
+backends:
+  - name: "comfy-1"
+    host: "127.0.0.1"
+    port: 8188
+    weight: 1
+    max_queue: 10
+    enabled: true
+  
+  - name: "comfy-2"
+    host: "127.0.0.1"
+    port: 8189
+    weight: 1
+    max_queue: 10
+    enabled: true
+  
+  # 添加更多后端...
+  # - name: "comfy-3"
+  #   host: "127.0.0.1"
+  #   port: 8190
+  #   weight: 1
+  #   max_queue: 10
+  #   enabled: true
+
