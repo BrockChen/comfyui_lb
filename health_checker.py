@@ -14,9 +14,10 @@ logger = logging.getLogger(__name__)
 class HealthChecker:
     """后端健康检查器"""
     
-    def __init__(self, settings: Settings, backend_manager: BackendManager):
+    def __init__(self, settings: Settings, backend_manager: BackendManager, ws_manager: Optional[object] = None):
         self.settings = settings
         self.backend_manager = backend_manager
+        self.ws_manager = ws_manager
         self._running = False
         self._check_task: Optional[asyncio.Task] = None
         self._on_status_change: Optional[Callable[[str, bool], Awaitable[None]]] = None
@@ -67,17 +68,40 @@ class HealthChecker:
         await self.backend_manager.check_all_backends()
         
         # 检查状态变化
-        if self._on_status_change:
-            for backend in self.backend_manager.get_all_backends():
-                if backend.name in old_status:
-                    if old_status[backend.name] != backend.status:
-                        try:
+        any_status_changed = False
+        for backend in self.backend_manager.get_all_backends():
+            if backend.name in old_status:
+                if old_status[backend.name] != backend.status:
+                    any_status_changed = True
+                    try:
+                        if self._on_status_change:
                             await self._on_status_change(
                                 backend.name, 
                                 backend.status.value == "healthy"
                             )
-                        except Exception as e:
-                            logger.warning(f"状态变化回调错误: {e}")
+                    except Exception as e:
+                        logger.warning(f"状态变化回调错误: {e}")
+        
+        # 如果有状态变化，广播更新
+        if any_status_changed and self.ws_manager:
+            try:
+                # 广播后端列表更新
+                await self.ws_manager.broadcast({
+                    "type": "backend_update",
+                    "data": {} 
+                })
+                # 同时广播统计更新
+                stats = {
+                    "total_backends": len(backends),
+                    "healthy_backends": len([b for b in backends if b.status.value == "healthy"]),
+                    "idle_backends": len([b for b in backends if b.status.value == "idle"]),
+                }
+                await self.ws_manager.broadcast({
+                    "type": "stats_update",
+                    "data": stats
+                })
+            except Exception as e:
+                logger.warning(f"广播状态更新失败: {e}")
     
     async def check_now(self):
         """立即执行一次检查"""

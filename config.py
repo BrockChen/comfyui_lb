@@ -3,7 +3,7 @@ ComfyUI 负载均衡器配置管理
 """
 import yaml
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings
 
@@ -77,7 +77,7 @@ class Settings(BaseSettings):
         env_prefix = "COMFYUI_LB_"
 
     @classmethod
-    def from_yaml(cls, path: str | Path) -> "Settings":
+    def from_yaml(cls, path: Union[str, Path]) -> "Settings":
         """从YAML文件加载配置"""
         path = Path(path)
         if not path.exists():

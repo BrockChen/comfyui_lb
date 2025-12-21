@@ -91,8 +91,12 @@ async def lifespan(app: FastAPI):
     )
     app.state.scheduler = scheduler
     
+    # 初始化WebSocket管理器
+    ws_manager = WebSocketManager()
+    app.state.ws_manager = ws_manager
+
     # 初始化任务队列
-    task_queue = TaskQueue(settings)
+    task_queue = TaskQueue(settings, ws_manager)
     app.state.task_queue = task_queue
     
     # 设置分发回调
@@ -101,17 +105,8 @@ async def lifespan(app: FastAPI):
     task_queue.set_dispatch_callback(dispatch_callback)
     
     # 初始化健康检查器
-    health_checker = HealthChecker(settings, backend_manager)
+    health_checker = HealthChecker(settings, backend_manager, ws_manager)
     app.state.health_checker = health_checker
-    
-    # 设置状态变化回调
-    async def status_change_callback(name: str, is_healthy: bool):
-        await on_backend_status_change(name, is_healthy, app.state)
-    health_checker.set_status_change_callback(status_change_callback)
-    
-    # 初始化WebSocket管理器
-    ws_manager = WebSocketManager()
-    app.state.ws_manager = ws_manager
     
     # 初始化Kong管理器
     if settings.kong.enabled:

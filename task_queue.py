@@ -16,8 +16,10 @@ logger = logging.getLogger(__name__)
 class TaskQueue:
     """任务队列"""
     
-    def __init__(self, settings: Settings):
+    
+    def __init__(self, settings: Settings, ws_manager: Any = None):
         self.settings = settings
+        self.ws_manager = ws_manager
         self._pending: OrderedDict[str, Task] = OrderedDict()  # 等待分发
         self._dispatched: dict[str, Task] = {}                  # 已分发
         self._completed: dict[str, Task] = {}                   # 已完成 (保留最近的)
@@ -68,6 +70,8 @@ class TaskQueue:
         
         # 通知分发循环
         self._dispatch_event.set()
+        # 广播更新
+        asyncio.create_task(self._broadcast_update())
         return task
     
     async def get_pending_task(self) -> Optional[Task]:
@@ -94,6 +98,7 @@ class TaskQueue:
             task.dispatched_at = datetime.now()
             self._dispatched[task.id] = task
             logger.info(f"任务已分发: {task.id} -> {backend_name} (prompt_id: {prompt_id})")
+            asyncio.create_task(self._broadcast_update())
     
     async def mark_completed(self, task_id: str, success: bool = True, error: Optional[str] = None):
         """标记任务完成"""
@@ -110,6 +115,7 @@ class TaskQueue:
                     self._completed.pop(next(iter(self._completed)))
                 
                 logger.info(f"任务完成: {task_id}, 状态: {task.status}")
+                asyncio.create_task(self._broadcast_update())
     
     async def mark_failed(self, task: Task, error: str):
         """标记任务失败并决定是否重试"""
@@ -229,6 +235,25 @@ class TaskQueue:
                 logger.exception(f"分发循环错误: {e}")
                 await asyncio.sleep(1)
     
+    async def _broadcast_update(self, event_type: str = "queue_update"):
+        """广播更新"""
+        if not self.ws_manager:
+            return
+            
+        try:
+            if event_type == "queue_update":
+                status = self.get_status().model_dump()
+                await self.ws_manager.broadcast({
+                    "type": "queue_update",
+                    "data": status
+                })
+            elif event_type == "stats_update":
+                # 这种通常由上层调用更合适,这里简化
+                pass
+                
+        except Exception as e:
+            logger.warning(f"广播消息失败: {e}")
+
     def trigger_dispatch(self):
         """触发分发检查"""
         self._dispatch_event.set()
