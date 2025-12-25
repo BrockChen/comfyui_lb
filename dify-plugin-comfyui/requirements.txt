@@ -1,2 +1,0 @@
-dify-plugin>=0.0.1
-httpx>=0.24.0
