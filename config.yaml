@@ -58,4 +58,13 @@ backends:
   #   max_queue: 10
   #   enabled: true
 
+# Kong API Gateway配置
+kong:
+  # 是否启用Kong集成
+  enabled: true
+  # Kong Admin API地址
+  admin_url: "http://localhost:8001"
+  # 请求超时时间(秒)
+  timeout: 10.0
+
 

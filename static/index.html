@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ComfyUI 负载均衡器</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --bg-primary: #0a0e14;
@@ -49,7 +52,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: 
+            background:
                 radial-gradient(ellipse 80% 50% at 50% -20%, rgba(57, 197, 187, 0.15), transparent),
                 radial-gradient(ellipse 60% 40% at 100% 0%, rgba(88, 166, 255, 0.1), transparent);
             pointer-events: none;
@@ -196,11 +199,25 @@
             animation: fadeInUp 0.5s ease backwards;
         }
 
-        .stat-card:nth-child(1) { animation-delay: 0.1s; }
-        .stat-card:nth-child(2) { animation-delay: 0.15s; }
-        .stat-card:nth-child(3) { animation-delay: 0.2s; }
-        .stat-card:nth-child(4) { animation-delay: 0.25s; }
-        .stat-card:nth-child(5) { animation-delay: 0.3s; }
+        .stat-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .stat-card:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .stat-card:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .stat-card:nth-child(4) {
+            animation-delay: 0.25s;
+        }
+
+        .stat-card:nth-child(5) {
+            animation-delay: 0.3s;
+        }
 
         .stat-card::before {
             content: '';
@@ -240,12 +257,29 @@
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
         }
 
-        .stat-card.cyan { --card-accent: var(--accent-cyan); }
-        .stat-card.green { --card-accent: var(--accent-green); }
-        .stat-card.yellow { --card-accent: var(--accent-yellow); }
-        .stat-card.red { --card-accent: var(--accent-red); }
-        .stat-card.blue { --card-accent: var(--accent-blue); }
-        .stat-card.purple { --card-accent: var(--accent-purple); }
+        .stat-card.cyan {
+            --card-accent: var(--accent-cyan);
+        }
+
+        .stat-card.green {
+            --card-accent: var(--accent-green);
+        }
+
+        .stat-card.yellow {
+            --card-accent: var(--accent-yellow);
+        }
+
+        .stat-card.red {
+            --card-accent: var(--accent-red);
+        }
+
+        .stat-card.blue {
+            --card-accent: var(--accent-blue);
+        }
+
+        .stat-card.purple {
+            --card-accent: var(--accent-purple);
+        }
 
         .stat-label {
             font-size: 13px;
@@ -393,8 +427,13 @@
             opacity: 0.3;
         }
 
-        .backend-status.healthy::before { border-color: var(--accent-green); }
-        .backend-status.unhealthy::before { border-color: var(--accent-red); }
+        .backend-status.healthy::before {
+            border-color: var(--accent-green);
+        }
+
+        .backend-status.unhealthy::before {
+            border-color: var(--accent-red);
+        }
 
         .backend-info h4 {
             font-size: 14px;
@@ -722,18 +761,41 @@
 
         /* 动画 */
         @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.8; transform: scale(0.95); }
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.8;
+                transform: scale(0.95);
+            }
         }
 
         @keyframes statusPulse {
-            0%, 100% { box-shadow: 0 0 12px var(--accent-green); }
-            50% { box-shadow: 0 0 20px var(--accent-green); }
+
+            0%,
+            100% {
+                box-shadow: 0 0 12px var(--accent-green);
+            }
+
+            50% {
+                box-shadow: 0 0 20px var(--accent-green);
+            }
         }
 
         @keyframes statusBlink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
         }
 
         @keyframes slideDown {
@@ -741,6 +803,7 @@
                 opacity: 0;
                 transform: translateY(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -752,6 +815,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -759,8 +823,13 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         @keyframes slideInRight {
@@ -768,6 +837,7 @@
                 opacity: 0;
                 transform: translateX(100px);
             }
+
             to {
                 opacity: 1;
                 transform: translateX(0);
@@ -782,13 +852,23 @@
         }
 
         @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
         }
 
         @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .loading {
@@ -798,11 +878,362 @@
         .rotating {
             animation: rotate 1s linear infinite;
         }
+
+        /* 标签页导航 */
+        .tab-nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 32px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: var(--text-secondary);
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            margin-bottom: -2px;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+            background: rgba(57, 197, 187, 0.05);
+        }
+
+        .tab-btn.active {
+            color: var(--accent-cyan);
+            border-bottom-color: var(--accent-cyan);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Kong 专用样式 */
+        .kong-status-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .kong-status-card .status-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            animation: statusPulse 2s ease-in-out infinite;
+        }
+
+        .kong-status-card .status-dot.connected {
+            background: var(--accent-green);
+            box-shadow: 0 0 12px var(--accent-green);
+        }
+
+        .kong-status-card .status-dot.disconnected {
+            background: var(--accent-red);
+            box-shadow: 0 0 12px var(--accent-red);
+            animation: statusBlink 1s ease-in-out infinite;
+        }
+
+        .service-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .service-item:hover {
+            border-color: var(--accent-cyan);
+            transform: translateX(4px);
+        }
+
+        .service-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .service-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .service-url {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .routes-list {
+            margin-left: 24px;
+            padding-left: 16px;
+            border-left: 2px solid var(--border);
+        }
+
+        .route-item {
+            padding: 10px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+            cursor: default;
+            position: relative;
+        }
+
+        .route-item:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .route-item .btn-icon {
+            position: relative;
+            z-index: 10;
+            pointer-events: auto;
+        }
+
+        .route-item>div:first-child {
+            flex: 1;
+            min-width: 0;
+            pointer-events: auto;
+        }
+
+        /* 路由添加表单 */
+        .add-route-form {
+            margin-top: 12px;
+            padding: 14px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: none;
+            animation: slideDown 0.2s ease;
+        }
+
+        .add-route-form.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .add-route-form .form-row {
+            margin-bottom: 12px;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .add-route-form .form-row.full-width {
+            grid-template-columns: 1fr;
+        }
+
+        .protocol-checkboxes {
+            display: flex;
+            gap: 12px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        .protocol-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            user-select: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .protocol-checkbox:hover {
+            background: var(--bg-card);
+        }
+
+        .protocol-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        .protocol-checkbox label {
+            cursor: pointer;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .protocol-group {
+            margin-top: 8px;
+        }
+
+        .protocol-group-title {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .add-route-form .form-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .add-route-form input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(57, 197, 187, 0.1);
+        }
+
+        .route-path {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--accent-cyan);
+        }
+
+        .plugin-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .plugin-item:hover {
+            border-color: var(--accent-purple);
+            transform: translateX(4px);
+        }
+
+        .plugin-name {
+            font-weight: 600;
+            color: var(--accent-purple);
+        }
+
+        .plugin-scope {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Kong UI 优化 */
+        #tab-kong .panel {
+            min-height: 400px;
+        }
+
+        #tab-kong .panel-body {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        #tab-kong .service-item {
+            margin-bottom: 16px;
+        }
+
+        #tab-kong .routes-list {
+            margin-top: 12px;
+        }
+
+        #tab-kong .form-row {
+            gap: 16px;
+        }
+
+        /* 插件表单专用布局 */
+        #add-plugin-form .form-row {
+            grid-template-columns: 2.2fr 1.8fr 2fr;
+            align-items: start;
+        }
+
+        #add-plugin-form .form-group {
+            min-width: 0;
+            /* 防止内容溢出 */
+        }
+
+        #add-plugin-form .form-group select,
+        #add-plugin-form .form-group input {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #add-plugin-form .form-group label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 500;
+        }
+
+        #add-plugin-form .form-group:focus-within label {
+            color: var(--accent);
+        }
+
+        @media (max-width: 1200px) {
+            #add-plugin-form .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        #tab-kong .kong-status-card {
+            font-size: 15px;
+        }
+
+        #tab-kong .kong-status-card>div:first-of-type {
+            flex: 1;
+        }
+
+        #tab-kong .plugin-item {
+            display: flex;
+            align-items: flex-start;
+            transition: all 0.2s ease;
+        }
+
+        #tab-kong .plugin-item:hover {
+            border-color: var(--accent) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #tab-kong #plugin-service-info {
+            padding: 6px 0;
+            line-height: 1.5;
+        }
     </style>
 </head>
+
 <body>
     <div class="toast-container" id="toast-container"></div>
-    
+
     <div class="container">
         <!-- 头部 -->
         <header>
@@ -824,134 +1255,336 @@
             </div>
         </header>
 
-        <!-- 统计卡片 -->
-        <div class="stats-grid">
-            <div class="stat-card cyan">
-                <div class="stat-label">📊 总后端数</div>
-                <div class="stat-value" id="stat-total">-</div>
-                <div class="stat-sub">已配置的 ComfyUI 实例</div>
+        <!-- 标签页导航 -->
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('loadbalancer')">
+                🖥️ 负载均衡
+            </button>
+            <button class="tab-btn" onclick="switchTab('kong')">
+                🌐 Kong 网关
+            </button>
+            <button class="tab-btn" onclick="switchTab('consumers')">
+                👥 消费者管理
+            </button>
+        </div>
+
+        <!-- 负载均衡标签页 -->
+        <div id="tab-loadbalancer" class="tab-content active">
+
+            <!-- 统计卡片 -->
+            <div class="stats-grid">
+                <div class="stat-card cyan">
+                    <div class="stat-label">📊 总后端数</div>
+                    <div class="stat-value" id="stat-total">-</div>
+                    <div class="stat-sub">已配置的 ComfyUI 实例</div>
+                </div>
+                <div class="stat-card green">
+                    <div class="stat-label">✅ 健康后端</div>
+                    <div class="stat-value" id="stat-healthy">-</div>
+                    <div class="stat-sub">正常运行中</div>
+                </div>
+                <div class="stat-card blue">
+                    <div class="stat-label">💤 空闲后端</div>
+                    <div class="stat-value" id="stat-idle">-</div>
+                    <div class="stat-sub">可接收新任务</div>
+                </div>
+                <div class="stat-card yellow">
+                    <div class="stat-label">⏳ 等待队列</div>
+                    <div class="stat-value" id="stat-pending">-</div>
+                    <div class="stat-sub">待分发任务</div>
+                </div>
+                <div class="stat-card purple">
+                    <div class="stat-label">🚀 进行中</div>
+                    <div class="stat-value" id="stat-dispatched">-</div>
+                    <div class="stat-sub">已分发执行</div>
+                </div>
             </div>
-            <div class="stat-card green">
-                <div class="stat-label">✅ 健康后端</div>
-                <div class="stat-value" id="stat-healthy">-</div>
-                <div class="stat-sub">正常运行中</div>
-            </div>
-            <div class="stat-card blue">
-                <div class="stat-label">💤 空闲后端</div>
-                <div class="stat-value" id="stat-idle">-</div>
-                <div class="stat-sub">可接收新任务</div>
-            </div>
-            <div class="stat-card yellow">
-                <div class="stat-label">⏳ 等待队列</div>
-                <div class="stat-value" id="stat-pending">-</div>
-                <div class="stat-sub">待分发任务</div>
-            </div>
-            <div class="stat-card purple">
-                <div class="stat-label">🚀 进行中</div>
-                <div class="stat-value" id="stat-dispatched">-</div>
-                <div class="stat-sub">已分发执行</div>
+
+            <!-- 主要内容 -->
+            <div class="main-grid">
+                <!-- 后端列表 -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <span class="icon">🖥️</span>
+                            后端实例
+                        </div>
+                        <button class="btn btn-secondary" onclick="toggleAddForm()">
+                            <span>➕</span> 添加后端
+                        </button>
+                    </div>
+
+                    <!-- 添加后端表单 -->
+                    <div class="add-backend-form" id="add-backend-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>名称</label>
+                                <input type="text" id="backend-name" placeholder="comfy-3">
+                            </div>
+                            <div class="form-group">
+                                <label>地址</label>
+                                <input type="text" id="backend-host" placeholder="127.0.0.1" value="127.0.0.1">
+                            </div>
+                            <div class="form-group">
+                                <label>端口</label>
+                                <input type="number" id="backend-port" placeholder="8190">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-secondary" onclick="toggleAddForm()">取消</button>
+                            <button class="btn btn-primary" onclick="addBackend()">添加</button>
+                        </div>
+                    </div>
+
+                    <div class="panel-body">
+                        <div class="backend-list" id="backend-list">
+                            <div class="skeleton skeleton-card"></div>
+                            <div class="skeleton skeleton-card"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧面板 -->
+                <div style="display: flex; flex-direction: column; gap: 24px;">
+                    <!-- 调度策略 -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <span class="icon">⚙️</span>
+                                调度策略
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="strategy-selector" id="strategy-selector">
+                                <button class="strategy-btn" data-strategy="least_busy">最少忙碌</button>
+                                <button class="strategy-btn" data-strategy="round_robin">轮询</button>
+                                <button class="strategy-btn" data-strategy="weighted">加权</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 任务队列 -->
+                    <div class="panel" style="flex: 1;">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <span class="icon">📋</span>
+                                任务队列
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <!-- 等待中 -->
+                            <div class="queue-section">
+                                <div class="queue-title">
+                                    等待分发 <span class="queue-badge" id="pending-count">0</span>
+                                </div>
+                                <div class="task-list" id="pending-tasks">
+                                    <div class="empty-state">
+                                        <p>暂无等待任务</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 进行中 -->
+                            <div class="queue-section">
+                                <div class="queue-title">
+                                    执行中 <span class="queue-badge" id="dispatched-count">0</span>
+                                </div>
+                                <div class="task-list" id="dispatched-tasks">
+                                    <div class="empty-state">
+                                        <p>暂无执行任务</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- 主要内容 -->
-        <div class="main-grid">
-            <!-- 后端列表 -->
-            <div class="panel">
+        <!-- Kong 网关标签页 -->
+        <div id="tab-kong" class="tab-content">
+            <!-- Kong 状态卡片 -->
+            <div class="kong-status-card">
+                <div class="status-dot disconnected" id="kong-status-dot"></div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; margin-bottom: 4px;">Kong API Gateway</div>
+                    <div style="font-size: 13px; color: var(--text-muted);" id="kong-status-text">未连接</div>
+                </div>
+                <button class="btn btn-secondary" onclick="refreshKong()">
+                    <span id="kong-refresh-icon">🔄</span> 刷新
+                </button>
+            </div>
+
+            <!-- Services & Routes -->
+            <div class="panel" style="margin-bottom: 24px;">
                 <div class="panel-header">
                     <div class="panel-title">
-                        <span class="icon">🖥️</span>
-                        后端实例
+                        <span class="icon">🔌</span>
+                        服务与路由
                     </div>
-                    <button class="btn btn-secondary" onclick="toggleAddForm()">
-                        <span>➕</span> 添加后端
+                    <button class="btn btn-secondary" onclick="toggleServiceForm()">
+                        <span>➕</span> 添加服务
                     </button>
                 </div>
-                
-                <!-- 添加后端表单 -->
-                <div class="add-backend-form" id="add-backend-form">
+
+                <!-- 添加服务表单 -->
+                <div class="add-backend-form" id="add-service-form">
                     <div class="form-row">
                         <div class="form-group">
-                            <label>名称</label>
-                            <input type="text" id="backend-name" placeholder="comfy-3">
+                            <label>服务名称</label>
+                            <input type="text" id="service-name" placeholder="api-service">
                         </div>
-                        <div class="form-group">
-                            <label>地址</label>
-                            <input type="text" id="backend-host" placeholder="127.0.0.1" value="127.0.0.1">
-                        </div>
-                        <div class="form-group">
-                            <label>端口</label>
-                            <input type="number" id="backend-port" placeholder="8190">
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label>服务URL</label>
+                            <input type="text" id="service-url" placeholder="http://backend:8000">
                         </div>
                     </div>
                     <div class="form-actions">
-                        <button class="btn btn-secondary" onclick="toggleAddForm()">取消</button>
-                        <button class="btn btn-primary" onclick="addBackend()">添加</button>
+                        <button class="btn btn-secondary" onclick="toggleServiceForm()">取消</button>
+                        <button class="btn btn-primary" onclick="createService()">创建</button>
                     </div>
                 </div>
 
                 <div class="panel-body">
-                    <div class="backend-list" id="backend-list">
-                        <div class="skeleton skeleton-card"></div>
-                        <div class="skeleton skeleton-card"></div>
+                    <div id="services-list">
+                        <div class="empty-state">
+                            <div class="icon">🔌</div>
+                            <p>暂无服务</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 右侧面板 -->
-            <div style="display: flex; flex-direction: column; gap: 24px;">
-                <!-- 调度策略 -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <div class="panel-title">
-                            <span class="icon">⚙️</span>
-                            调度策略
+            <!-- Plugins -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span class="icon">🔧</span>
+                        插件管理
+                    </div>
+                    <button class="btn btn-secondary" onclick="togglePluginForm()">
+                        <span>➕</span> 添加插件
+                    </button>
+                </div>
+
+                <!-- 添加插件表单 -->
+                <div class="add-backend-form" id="add-plugin-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>🔍 选择插件</label>
+                            <select id="plugin-name-select" onchange="updatePluginName()"
+                                style="padding: 10px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-family: 'JetBrains Mono', monospace; font-size: 14px; width: 100%; box-sizing: border-box; transition: all 0.3s ease;">
+                                <option value="">-- 选择常用插件 --</option>
+                                <optgroup label="流量控制">
+                                    <option value="rate-limiting">rate-limiting (速率限制)</option>
+                                    <option value="request-size-limiting">request-size-limiting (请求大小限制)</option>
+                                    <option value="response-ratelimiting">response-ratelimiting (响应速率限制)</option>
+                                </optgroup>
+                                <optgroup label="安全">
+                                    <option value="cors">cors (跨域资源共享)</option>
+                                    <option value="ip-restriction">ip-restriction (IP限制)</option>
+                                    <option value="bot-detection">bot-detection (机器人检测)</option>
+                                    <option value="acl">acl (访问控制列表)</option>
+                                </optgroup>
+                                <optgroup label="认证">
+                                    <option value="key-auth">key-auth (API密钥认证)</option>
+                                    <option value="jwt">jwt (JWT认证)</option>
+                                    <option value="oauth2">oauth2 (OAuth2认证)</option>
+                                    <option value="basic-auth">basic-auth (基础认证)</option>
+                                </optgroup>
+                                <optgroup label="转换">
+                                    <option value="request-transformer">request-transformer (请求转换)</option>
+                                    <option value="response-transformer">response-transformer (响应转换)</option>
+                                    <option value="correlation-id">correlation-id (关联ID)</option>
+                                </optgroup>
+                                <optgroup label="日志">
+                                    <option value="file-log">file-log (文件日志)</option>
+                                    <option value="http-log">http-log (HTTP日志)</option>
+                                    <option value="tcp-log">tcp-log (TCP日志)</option>
+                                    <option value="syslog">syslog (系统日志)</option>
+                                </optgroup>
+                                <optgroup label="其他">
+                                    <option value="custom">自定义插件...</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>✏️ 插件名称</label>
+                            <input type="text" id="plugin-name" placeholder="或手动输入插件名" style="width: 100%;">
+                        </div>
+                        <div class="form-group">
+                            <label>🔗 关联服务 (可选)</label>
+                            <div style="position: relative;">
+                                <select id="plugin-service"
+                                    style="padding: 10px 14px; padding-right: 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-family: 'JetBrains Mono', monospace; font-size: 14px; width: 100%; appearance: none; background-image: url('data:image/svg+xml;utf8,<svg xmlns=\"
+                                    http://www.w3.org/2000/svg\" width=\"12\" height=\"12\" viewBox=\"0 0 12 12\">
+                                    <path fill=\"%23666\" d=\"M6 9L1 4h10z\" /></svg>'); background-repeat: no-repeat;
+                                    background-position: right 14px center; cursor: pointer;">
+                                    <option value="">🌐 全局插件 (应用于所有服务)</option>
+                                </select>
+                            </div>
+                            <div id="plugin-service-info"
+                                style="margin-top: 8px; font-size: 12px; color: var(--text-muted); min-height: 18px;">
+                            </div>
                         </div>
                     </div>
-                    <div class="panel-body">
-                        <div class="strategy-selector" id="strategy-selector">
-                            <button class="strategy-btn" data-strategy="least_busy">最少忙碌</button>
-                            <button class="strategy-btn" data-strategy="round_robin">轮询</button>
-                            <button class="strategy-btn" data-strategy="weighted">加权</button>
-                        </div>
+                    <div class="form-actions">
+                        <button class="btn btn-secondary" onclick="togglePluginForm()">取消</button>
+                        <button class="btn btn-primary" onclick="createPlugin()">创建</button>
                     </div>
                 </div>
 
-                <!-- 任务队列 -->
-                <div class="panel" style="flex: 1;">
-                    <div class="panel-header">
-                        <div class="panel-title">
-                            <span class="icon">📋</span>
-                            任务队列
+                <div class="panel-body">
+                    <div id="plugins-list">
+                        <div class="empty-state">
+                            <div class="icon">🔧</div>
+                            <p>暂无插件</p>
                         </div>
                     </div>
-                    <div class="panel-body">
-                        <!-- 等待中 -->
-                        <div class="queue-section">
-                            <div class="queue-title">
-                                等待分发 <span class="queue-badge" id="pending-count">0</span>
-                            </div>
-                            <div class="task-list" id="pending-tasks">
-                                <div class="empty-state">
-                                    <p>暂无等待任务</p>
-                                </div>
-                            </div>
-                        </div>
+                </div>
+            </div>
+        </div> <!-- End of tab-kong -->
 
-                        <!-- 进行中 -->
-                        <div class="queue-section">
-                            <div class="queue-title">
-                                执行中 <span class="queue-badge" id="dispatched-count">0</span>
-                            </div>
-                            <div class="task-list" id="dispatched-tasks">
-                                <div class="empty-state">
-                                    <p>暂无执行任务</p>
-                                </div>
-                            </div>
+        <!-- 消费者管理标签页 -->
+        <div id="tab-consumers" class="tab-content">
+            <div class="panel" style="margin-bottom: 24px;">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span class="icon">👥</span>
+                        消费者管理
+                    </div>
+                    <button class="btn btn-secondary" onclick="toggleConsumerForm()">
+                        <span>➕</span> 添加消费者
+                    </button>
+                </div>
+
+                <!-- 添加消费者表单 -->
+                <div class="add-backend-form" id="add-consumer-form">
+                    <div class="form-row">
+                        <div class="form-group" style="grid-column: span 3;">
+                            <label>用户名 (Username)</label>
+                            <input type="text" id="consumer-username" placeholder="请输入用户名" style="width: 100%;">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-secondary" onclick="toggleConsumerForm()">取消</button>
+                        <button class="btn btn-primary" onclick="createConsumer()">创建</button>
+                    </div>
+                </div>
+
+                <div class="panel-body">
+                    <div id="consumers-list">
+                        <div class="empty-state">
+                            <div class="icon">👥</div>
+                            <p>加载中...</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div> <!-- End of tab-loadbalancer -->
+
+
     </div>
 
     <script>
@@ -965,19 +1598,19 @@
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            
+
             const icons = {
                 success: '✅',
                 error: '❌',
                 warning: '⚠️',
                 info: 'ℹ️'
             };
-            
+
             toast.innerHTML = `
                 <span class="toast-icon">${icons[type] || icons.info}</span>
                 <span class="toast-message">${message}</span>
             `;
-            
+
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
@@ -987,7 +1620,7 @@
             refreshData();
             startAutoRefresh();
             initStrategyButtons();
-            
+
             // 检测用户交互
             ['mousedown', 'keydown', 'scroll'].forEach(event => {
                 document.addEventListener(event, () => {
@@ -1016,7 +1649,7 @@
         async function refreshData() {
             const refreshIcon = document.getElementById('refresh-icon');
             refreshIcon.classList.add('rotating');
-            
+
             try {
                 const [stats, tasks, scheduler] = await Promise.all([
                     fetch(`${API_BASE}/lb/stats`).then(r => r.json()),
@@ -1045,7 +1678,7 @@
                 'stat-pending': stats.queue_status.pending,
                 'stat-dispatched': stats.queue_status.dispatched
             };
-            
+
             Object.entries(elements).forEach(([id, value]) => {
                 const el = document.getElementById(id);
                 if (el.textContent !== value.toString()) {
@@ -1059,7 +1692,7 @@
         // 更新后端列表
         function updateBackendList(backends) {
             const container = document.getElementById('backend-list');
-            
+
             if (backends.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
@@ -1082,10 +1715,10 @@
                         <div class="label">队列</div>
                     </div>
                     <div class="backend-actions">
-                        ${backend.enabled 
-                            ? `<button class="btn-icon" onclick="toggleBackend('${backend.name}', false)" title="禁用">⏸️</button>`
-                            : `<button class="btn-icon" onclick="toggleBackend('${backend.name}', true)" title="启用">▶️</button>`
-                        }
+                        ${backend.enabled
+                    ? `<button class="btn-icon" onclick="toggleBackend('${backend.name}', false)" title="禁用">⏸️</button>`
+                    : `<button class="btn-icon" onclick="toggleBackend('${backend.name}', true)" title="启用">▶️</button>`
+                }
                         <button class="btn-icon danger" onclick="removeBackend('${backend.name}')" title="移除">🗑️</button>
                     </div>
                 </div>
@@ -1096,7 +1729,7 @@
         function updateTaskLists(tasks) {
             const pendingContainer = document.getElementById('pending-tasks');
             const dispatchedContainer = document.getElementById('dispatched-tasks');
-            
+
             document.getElementById('pending-count').textContent = tasks.pending.length;
             document.getElementById('dispatched-count').textContent = tasks.dispatched.length;
 
@@ -1197,8 +1830,8 @@
 
         // 移除后端
         async function removeBackend(name) {
-            if (!confirm(`确定要移除后端 "${name}" 吗?`)) return;
-            
+            // if (!confirm(`确定要移除后端 "${name}" 吗?`)) return;
+
             try {
                 await fetch(`${API_BASE}/lb/backends/${name}`, { method: 'DELETE' });
                 showToast(`后端 "${name}" 已移除`, 'success');
@@ -1221,6 +1854,828 @@
                 showToast('操作失败', 'error');
             }
         }
+
+        // ============ 标签页切换 ============
+        function switchTab(tabName) {
+            // 更新标签按钮状态
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // 切换内容
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+
+            // 如果切换到Kong标签页，刷新Kong数据
+            if (tabName === 'kong') {
+                refreshKong();
+            } else if (tabName === 'consumers') {
+                refreshConsumers();
+            }
+        }
+
+        // ============ Kong 管理功能 ============
+        let kongServices = [];
+        let kongRoutes = [];
+        let kongPlugins = [];
+
+        async function refreshKong() {
+            const refreshIcon = document.getElementById('kong-refresh-icon');
+            refreshIcon.classList.add('rotating');
+
+            try {
+                // 获取Kong状态
+                const status = await fetch(`${API_BASE}/kong/status`).then(r => r.json());
+                updateKongStatus(status);
+
+                if (status.connected) {
+                    // 获取所有数据
+                    const [services, routes, plugins] = await Promise.all([
+                        fetch(`${API_BASE}/kong/services`).then(r => r.json()),
+                        fetch(`${API_BASE}/kong/routes`).then(r => r.json()),
+                        fetch(`${API_BASE}/kong/plugins`).then(r => r.json())
+                    ]);
+
+                    kongServices = services.data || [];
+                    kongRoutes = routes.data || [];
+                    kongPlugins = plugins.data || [];
+
+                    updateServicesList();
+                    updatePluginsList();
+                    updateServiceSelector();
+                }
+            } catch (error) {
+                console.error('Kong刷新失败:', error);
+                showToast('Kong数据刷新失败', 'error');
+                updateKongStatus({ connected: false });
+            } finally {
+                refreshIcon.classList.remove('rotating');
+            }
+        }
+
+        function updateKongStatus(status) {
+            const dot = document.getElementById('kong-status-dot');
+            const text = document.getElementById('kong-status-text');
+
+            if (status.connected) {
+                dot.className = 'status-dot connected';
+                text.textContent = `已连接 (${status.version || 'unknown'})`;
+            } else {
+                dot.className = 'status-dot disconnected';
+                text.textContent = '未连接 - Kong未启用或无法访问';
+            }
+        }
+
+        function updateServicesList() {
+            const container = document.getElementById('services-list');
+
+            if (kongServices.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">🔌</div>
+                        <p>暂无服务</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = kongServices.map(service => {
+                const serviceRoutes = kongRoutes.filter(r => r.service && r.service.id === service.id);
+                const routesHtml = serviceRoutes.map(route => {
+                    const routePaths = (route.paths || []).join(', ') || '(无路径)';
+                    const routeName = route.name || route.id || '未命名路由';
+                    const routeMethods = route.methods ? `[${route.methods.join(', ')}]` : '';
+                    const routeHosts = route.hosts ? `Host: ${route.hosts.join(', ')}` : '';
+                    const routeProtocols = route.protocols ? route.protocols.map(p => p.toUpperCase()).join(', ') : '';
+
+                    return `
+                    <div class="route-item" data-route-id="${route.id}">
+                        <div style="flex: 1; min-width: 0;">
+                            <div class="route-path" style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap;">
+                                <span>🛤️</span>
+                                <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent-cyan); font-weight: 500;">${routePaths}</span>
+                                ${routeProtocols ? `<span style="font-size: 11px; color: var(--accent); font-weight: 500; padding: 2px 6px; background: var(--bg-card); border-radius: 4px;">${routeProtocols}</span>` : ''}
+                                ${routeMethods ? `<span style="font-size: 11px; color: var(--text-muted);">${routeMethods}</span>` : ''}
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-muted);">
+                                <span>${routeName}</span>
+                                ${routeHosts ? `<span style="opacity: 0.7;">• ${routeHosts}</span>` : ''}
+                            </div>
+                        </div>
+                        <button class="btn-icon danger" onclick="event.stopPropagation(); deleteRoute('${route.id}')" 
+                                title="删除路由" 
+                                style="margin-left: 12px; flex-shrink: 0; z-index: 10; position: relative;">
+                            🗑️
+                        </button>
+                    </div>
+                `;
+                }).join('');
+
+                return `
+                    <div class="service-item" data-service-id="${service.id}">
+                        <div class="service-header">
+                            <div>
+                                <div class="service-title">🔌 ${service.name}</div>
+                                <div class="service-url">${service.protocol}://${service.host}:${service.port}${service.path || ''}</div>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="toggleAddRouteForm('${service.id}')" id="route-btn-${service.id}">+ 路由</button>
+                                <button class="btn-icon danger" onclick="deleteService('${service.id}')" title="删除">🗑️</button>
+                            </div>
+                        </div>
+                        <div class="add-route-form" id="add-route-form-${service.id}">
+                            <div class="form-row">
+                                <div class="form-group" style="grid-column: span 1;">
+                                    <label>🛤️ 路由路径 <span style="color: var(--error);">*</span></label>
+                                    <input type="text" id="route-path-${service.id}" placeholder="/api/v1" 
+                                        style="width: 100%;"
+                                        onkeydown="if(event.key === 'Enter') { event.preventDefault(); createRouteForService('${service.id}', '${service.name}'); }">
+                                </div>
+                                <div class="form-group" style="grid-column: span 1;">
+                                    <label>📝 路由名称 (可选)</label>
+                                    <input type="text" id="route-name-${service.id}" placeholder="路由名称" 
+                                        style="width: 100%;"
+                                        onkeydown="if(event.key === 'Enter') { event.preventDefault(); createRouteForService('${service.id}', '${service.name}'); }">
+                                </div>
+                            </div>
+                            <div class="form-row full-width">
+                                <div class="form-group">
+                                    <label>🌐 协议 <span style="color: var(--error);">*</span></label>
+                                    <div class="protocol-checkboxes">
+                                        <div class="protocol-group">
+                                            <div class="protocol-group-title">Web 协议</div>
+                                            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                                <div class="protocol-checkbox">
+                                                    <input type="checkbox" id="route-protocol-http-${service.id}" value="http" checked>
+                                                    <label for="route-protocol-http-${service.id}">HTTP</label>
+                                                </div>
+                                                <div class="protocol-checkbox">
+                                                    <input type="checkbox" id="route-protocol-https-${service.id}" value="https" checked>
+                                                    <label for="route-protocol-https-${service.id}">HTTPS</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="protocol-group">
+                                            <div class="protocol-group-title">WebSocket 协议</div>
+                                            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                                <div class="protocol-checkbox">
+                                                    <input type="checkbox" id="route-protocol-ws-${service.id}" value="ws">
+                                                    <label for="route-protocol-ws-${service.id}">WS</label>
+                                                </div>
+                                                <div class="protocol-checkbox">
+                                                    <input type="checkbox" id="route-protocol-wss-${service.id}" value="wss">
+                                                    <label for="route-protocol-wss-${service.id}">WSS</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">
+                                        💡 至少选择一个协议。默认选择 HTTP 和 HTTPS
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px; padding: 8px; background: var(--bg-card); border-radius: 6px;">
+                                💡 提示: 多个路径用逗号分隔，例如: <code style="font-family: 'JetBrains Mono', monospace; background: var(--bg-secondary); padding: 2px 4px; border-radius: 3px;">/api/v1, /api/v2</code>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="toggleAddRouteForm('${service.id}')">取消</button>
+                                <button class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="createRouteForService('${service.id}', '${service.name}')" id="create-route-btn-${service.id}">创建路由</button>
+                            </div>
+                        </div>
+                        ${serviceRoutes.length > 0 ? `<div class="routes-list">${routesHtml}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updatePluginsList() {
+            const container = document.getElementById('plugins-list');
+
+            if (kongPlugins.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">🔧</div>
+                        <p>暂无插件</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = kongPlugins.map(plugin => {
+                let scopeHtml = '<span style="color: var(--accent);">🌐 全局插件</span>';
+                let serviceInfo = '';
+
+                if (plugin.service) {
+                    const service = kongServices.find(s => s.id === plugin.service.id);
+                    if (service) {
+                        scopeHtml = `
+                            <span style="color: var(--success);">📎 关联服务:</span>
+                            <strong style="color: var(--text-primary);">${service.name}</strong>
+                        `;
+                        serviceInfo = `
+                            <div style="margin-top: 4px; font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">
+                                ${service.url || 'N/A'}
+                            </div>
+                        `;
+                    } else {
+                        scopeHtml = `<span style="color: var(--warning);">⚠️ 服务已删除 (ID: ${plugin.service.id})</span>`;
+                    }
+                }
+
+                return `
+                    <div class="plugin-item" style="padding: 14px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; background: var(--bg-card);">
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                                <span style="font-size: 18px;">🔧</span>
+                                <div class="plugin-name" style="font-weight: 600; font-size: 15px; color: var(--text-primary);">${plugin.name}</div>
+                            </div>
+                            <div class="plugin-scope" style="font-size: 13px; margin-top: 6px;">
+                                ${scopeHtml}
+                                ${serviceInfo}
+                            </div>
+                        </div>
+                        <button class="btn-icon danger" onclick="deletePlugin('${plugin.id}')" title="删除插件" style="margin-left: 12px;">🗑️</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateServiceSelector() {
+            const select = document.getElementById('plugin-service');
+            const infoDiv = document.getElementById('plugin-service-info');
+
+            // 清空并添加全局选项
+            select.innerHTML = '<option value="">🌐 全局插件 (应用于所有服务)</option>';
+
+            if (kongServices.length === 0) {
+                // 如果没有服务，显示提示
+                const option = document.createElement('option');
+                option.value = '';
+                option.disabled = true;
+                option.textContent = '⚠️ 暂无服务，请先创建服务';
+                select.appendChild(option);
+                infoDiv.innerHTML = '<span style="color: var(--warning);">请先在"服务管理"中创建服务</span>';
+                return;
+            }
+
+            // 添加服务选项，显示名称和 URL
+            kongServices.forEach(service => {
+                const option = document.createElement('option');
+                option.value = service.id;
+                // 如果 URL 太长，截断显示
+                const displayUrl = service.url && service.url.length > 50
+                    ? service.url.substring(0, 47) + '...'
+                    : (service.url || 'N/A');
+                option.textContent = `${service.name} - ${displayUrl}`;
+                option.setAttribute('data-url', service.url || '');
+                option.setAttribute('title', `${service.name}\n${service.url || 'N/A'}`);
+                select.appendChild(option);
+            });
+
+            // 添加选择变化监听，显示选中服务的信息
+            select.onchange = function () {
+                const selectedOption = select.options[select.selectedIndex];
+                if (select.value) {
+                    const service = kongServices.find(s => s.id === select.value);
+                    if (service) {
+                        infoDiv.innerHTML = `
+                            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                                <span style="color: var(--accent);">📎 将关联到:</span>
+                                <strong style="color: var(--text-primary);">${service.name}</strong>
+                                <span style="opacity: 0.7; font-family: 'JetBrains Mono', monospace; font-size: 11px;">${service.url || 'N/A'}</span>
+                            </div>
+                        `;
+                    }
+                } else {
+                    infoDiv.innerHTML = '<span style="color: var(--text-muted);">🌐 插件将应用于所有服务</span>';
+                }
+            };
+
+            // 触发一次以显示当前选择
+            if (select.value) {
+                select.onchange();
+            } else {
+                infoDiv.innerHTML = '<span style="color: var(--text-muted);">🌐 插件将应用于所有服务</span>';
+            }
+        }
+
+        // 表单切换
+        function toggleServiceForm() {
+            document.getElementById('add-service-form').classList.toggle('show');
+        }
+
+        function togglePluginForm() {
+            document.getElementById('add-plugin-form').classList.toggle('show');
+        }
+
+        function toggleAddRouteForm(serviceId) {
+            const form = document.getElementById(`add-route-form-${serviceId}`);
+            const btn = document.getElementById(`route-btn-${serviceId}`);
+
+            if (form) {
+                const isShowing = form.classList.contains('show');
+                if (isShowing) {
+                    form.classList.remove('show');
+                    btn.textContent = '+ 路由';
+                    // 清空表单
+                    const pathInput = document.getElementById(`route-path-${serviceId}`);
+                    const nameInput = document.getElementById(`route-name-${serviceId}`);
+                    if (pathInput) pathInput.value = '';
+                    if (nameInput) nameInput.value = '';
+
+                    // 重置协议选择为默认值（只选中 HTTP 和 HTTPS）
+                    const protocolIds = ['http', 'https', 'ws', 'wss', 'grpc', 'grpcs', 'tcp', 'tls'];
+                    protocolIds.forEach(proto => {
+                        const checkbox = document.getElementById(`route-protocol-${proto}-${serviceId}`);
+                        if (checkbox) {
+                            checkbox.checked = (proto === 'http' || proto === 'https');
+                        }
+                    });
+                } else {
+                    form.classList.add('show');
+                    btn.textContent = '取消';
+                    // 聚焦到路径输入框
+                    setTimeout(() => {
+                        const pathInput = document.getElementById(`route-path-${serviceId}`);
+                        if (pathInput) pathInput.focus();
+                    }, 100);
+                }
+            }
+        }
+
+        async function createRouteForService(serviceId, serviceName) {
+            const pathInput = document.getElementById(`route-path-${serviceId}`);
+            const nameInput = document.getElementById(`route-name-${serviceId}`);
+            const createBtn = document.getElementById(`create-route-btn-${serviceId}`);
+
+            if (!pathInput) {
+                showToast('无法找到路径输入框', 'error');
+                return;
+            }
+
+            const pathValue = pathInput.value.trim();
+            if (!pathValue) {
+                showToast('请输入路由路径', 'warning');
+                pathInput.focus();
+                return;
+            }
+
+            // 获取所有选中的协议
+            const protocolCheckboxes = [
+                document.getElementById(`route-protocol-http-${serviceId}`),
+                document.getElementById(`route-protocol-https-${serviceId}`),
+                document.getElementById(`route-protocol-ws-${serviceId}`),
+                document.getElementById(`route-protocol-wss-${serviceId}`),
+                document.getElementById(`route-protocol-grpc-${serviceId}`),
+                document.getElementById(`route-protocol-grpcs-${serviceId}`),
+                document.getElementById(`route-protocol-tcp-${serviceId}`),
+                document.getElementById(`route-protocol-tls-${serviceId}`)
+            ];
+
+            const protocols = protocolCheckboxes
+                .filter(cb => cb && cb.checked)
+                .map(cb => cb.value);
+
+            if (protocols.length === 0) {
+                showToast('请至少选择一个协议', 'warning');
+                return;
+            }
+
+            // 保存协议组合信息用于错误处理
+            const webProtocols = ['http', 'https'];
+            const wsProtocols = ['ws', 'wss'];
+            const hasWeb = protocols.some(p => webProtocols.includes(p));
+            const hasWS = protocols.some(p => wsProtocols.includes(p));
+
+            // const hasWeb = protocols.some(p => webProtocols.includes(p));
+            // const hasWS = protocols.some(p => wsProtocols.includes(p));
+            // const hasGRPC = protocols.some(p => grpcProtocols.includes(p));
+            // const hasTCP = protocols.some(p => tcpProtocols.includes(p));
+
+            // Kong 最佳实践：Web 协议和 WebSocket 协议应使用独立路由
+            if (hasWeb && hasWS) {
+                showToast('💡 建议：为 HTTP 和 WebSocket 创建独立的路由。例如：/api 用于 HTTP，/ws 用于 WebSocket', 'info');
+                return;
+            }
+
+            // 其他协议组合验证
+            const protocolGroups = [hasWeb, hasWS].filter(Boolean).length;
+            if (protocolGroups > 1) {
+                // 允许的组合：Web + gRPC, Web + TCP, WS + gRPC, WS + TCP
+                if (hasWeb || hasWS) {
+                    // 这个组合是允许的
+                } else {
+                    showToast('不支持的协议组合。请选择兼容的协议组合。', 'warning');
+                    return;
+                }
+            }
+
+            // 支持多个路径，用逗号分隔
+            const paths = pathValue.split(',').map(p => p.trim()).filter(p => p);
+            if (paths.length === 0) {
+                showToast('请输入有效的路径', 'warning');
+                pathInput.focus();
+                return;
+            }
+
+
+
+            // 禁用按钮，显示加载状态
+            const originalText = createBtn.textContent;
+            createBtn.disabled = true;
+            createBtn.textContent = '创建中...';
+
+            try {
+                const routeData = {
+                    paths: paths,
+                    protocols: protocols
+                };
+
+                // 如果提供了路由名称，添加到请求中
+                if (nameInput && nameInput.value.trim()) {
+                    routeData.name = nameInput.value.trim();
+                }
+
+                const response = await fetch(`${API_BASE}/kong/services/${serviceId}/routes`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(routeData)
+                });
+
+                if (response.ok) {
+                    showToast(`路由创建成功: ${paths.join(', ')} [${protocols.join(', ')}]`, 'success');
+                    // 关闭表单
+                    toggleAddRouteForm(serviceId);
+                    // 延迟刷新以确保数据已更新
+                    setTimeout(() => {
+                        refreshKong();
+                    }, 300);
+                } else {
+                    let errorMessage = `HTTP ${response.status}`;
+                    try {
+                        const errorData = await response.json();
+                        if (errorData.detail) {
+                            errorMessage = errorData.detail;
+                            // 如果是 Kong API 错误，尝试提取更详细的信息
+                            if (errorMessage.includes('400') || errorMessage.includes('Bad Request')) {
+                                // 检查是否是协议组合问题
+                                if (hasWeb && hasWS) {
+                                    errorMessage = 'HTTP/HTTPS 和 WS/WSS 不能同时使用。请选择其中一组协议。';
+                                } else if (errorMessage.includes('protocols')) {
+                                    errorMessage = '协议配置错误。请检查协议组合是否有效。';
+                                }
+                            }
+                        } else if (errorData.message) {
+                            errorMessage = errorData.message;
+                        } else if (errorData.fields) {
+                            // Kong 字段错误
+                            const fieldErrors = Object.entries(errorData.fields)
+                                .map(([field, errors]) => `${field}: ${Array.isArray(errors) ? errors.join(', ') : errors}`)
+                                .join('; ');
+                            errorMessage = fieldErrors || errorMessage;
+                        }
+                    } catch (e) {
+                        const text = await response.text().catch(() => '');
+                        if (text) {
+                            errorMessage = text.substring(0, 200);
+                        }
+                    }
+                    throw new Error(errorMessage);
+                }
+            } catch (error) {
+                console.error('创建路由失败:', error);
+                showToast(`创建路由失败: ${error.message || error}`, 'error');
+            } finally {
+                // 恢复按钮状态
+                createBtn.disabled = false;
+                createBtn.textContent = originalText;
+            }
+        }
+
+        // CRUD 操作
+        async function createService() {
+            const name = document.getElementById('service-name').value;
+            const url = document.getElementById('service-url').value;
+
+            if (!name || !url) {
+                showToast('请填写完整信息', 'warning');
+                return;
+            }
+
+            try {
+                await fetch(`${API_BASE}/kong/services`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, url })
+                });
+                showToast(`服务 "${name}" 创建成功`, 'success');
+                toggleServiceForm();
+                document.getElementById('service-name').value = '';
+                document.getElementById('service-url').value = '';
+                refreshKong();
+            } catch (error) {
+                console.error('创建服务失败:', error);
+                showToast('创建服务失败', 'error');
+            }
+        }
+
+        async function deleteService(serviceId) {
+            const service = kongServices.find(s => s.id === serviceId);
+            // if (!confirm(`确定要删除服务 "${service?.name}" 吗？这将同时删除所有关联的路由。`)) return;
+
+            try {
+                await fetch(`${API_BASE}/kong/services/${serviceId}`, { method: 'DELETE' });
+                showToast('服务已删除', 'success');
+                refreshKong();
+            } catch (error) {
+                console.error('删除服务失败:', error);
+                showToast('删除服务失败', 'error');
+            }
+        }
+
+        async function createRoute(serviceId, paths) {
+            // 确保 paths 是数组
+            const pathsArray = Array.isArray(paths) ? paths : [paths];
+
+            if (pathsArray.length === 0) {
+                showToast('请输入至少一个路径', 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/kong/services/${serviceId}/routes`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ paths: pathsArray })
+                });
+
+                if (response.ok) {
+                    const routeData = await response.json();
+                    showToast(`路由创建成功: ${pathsArray.join(', ')}`, 'success');
+                    // 延迟刷新以确保数据已更新
+                    setTimeout(() => {
+                        refreshKong();
+                    }, 300);
+                } else {
+                    const errorData = await response.json().catch(() => ({ detail: `HTTP ${response.status}` }));
+                    throw new Error(errorData.detail || `HTTP ${response.status}`);
+                }
+            } catch (error) {
+                console.error('创建路由失败:', error);
+                showToast(`创建路由失败: ${error.message || error}`, 'error');
+            }
+        }
+
+        async function deleteRoute(routeId) {
+            // 找到路由信息用于确认对话框
+            const route = kongRoutes.find(r => r.id === routeId);
+            const routeInfo = route ?
+                `路径: ${(route.paths || []).join(', ') || 'N/A'}` :
+                `ID: ${routeId}`;
+
+            // if (!confirm(`确定要删除此路由吗？\n${routeInfo}`)) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/kong/routes/${routeId}`, { method: 'DELETE' });
+                if (response.ok) {
+                    showToast('路由已删除', 'success');
+                    refreshKong();
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(errorText || `HTTP ${response.status}`);
+                }
+            } catch (error) {
+                console.error('删除路由失败:', error);
+                showToast(`删除路由失败: ${error.message}`, 'error');
+            }
+        }
+
+        async function createPlugin() {
+            const name = document.getElementById('plugin-name').value;
+            const serviceId = document.getElementById('plugin-service').value;
+            const serviceSelect = document.getElementById('plugin-service');
+            const serviceInfo = document.getElementById('plugin-service-info');
+
+            if (!name) {
+                showToast('请填写插件名称', 'warning');
+                return;
+            }
+
+            try {
+                const serviceName = serviceId ?
+                    (kongServices.find(s => s.id === serviceId)?.name || '未知服务') :
+                    '全局';
+
+                await fetch(`${API_BASE}/kong/plugins`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name,
+                        service_id: serviceId || null
+                    })
+                });
+                showToast(`插件 "${name}" 创建成功${serviceId ? ` (关联到 ${serviceName})` : ' (全局插件)'}`, 'success');
+                togglePluginForm();
+
+                // 重置表单
+                document.getElementById('plugin-name').value = '';
+                document.getElementById('plugin-name-select').value = '';
+                serviceSelect.value = '';
+                serviceInfo.innerHTML = '<span style="color: var(--text-muted);">插件将应用于所有服务</span>';
+
+                refreshKong();
+            } catch (error) {
+                console.error('创建插件失败:', error);
+                showToast('创建插件失败', 'error');
+            }
+        }
+
+        // 更新插件名称（从下拉列表选择）
+        function updatePluginName() {
+            const select = document.getElementById('plugin-name-select');
+            const input = document.getElementById('plugin-name');
+            if (select.value && select.value !== 'custom') {
+                input.value = select.value;
+            } else if (select.value === 'custom') {
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        async function deletePlugin(pluginId) {
+            // if (!confirm('确定要删除此插件吗？')) return;
+
+            try {
+                await fetch(`${API_BASE}/kong/plugins/${pluginId}`, { method: 'DELETE' });
+                showToast('插件已删除', 'success');
+                refreshKong();
+            } catch (error) {
+                console.error('删除插件失败:', error);
+                showToast('删除插件失败', 'error');
+            }
+        }
+
+        // ============ 消费者 & 凭据管理 ============
+        let kongConsumers = [];
+
+        async function refreshConsumers() {
+            try {
+                const status = await fetch(`${API_BASE}/kong/status`).then(r => r.json());
+                if (!status.connected) {
+                    document.getElementById('consumers-list').innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">🚫</div>
+                            <p>Kong 网关未连接</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const consumers = await fetch(`${API_BASE}/kong/consumers`).then(r => r.json());
+                kongConsumers = consumers.data || [];
+                updateConsumersList();
+            } catch (error) {
+                console.error('刷新消费者失败:', error);
+                showToast('刷新消费者失败', 'error');
+            }
+        }
+
+        function toggleConsumerForm() {
+            document.getElementById('add-consumer-form').classList.toggle('show');
+        }
+
+        async function createConsumer() {
+            const usernameInput = document.getElementById('consumer-username');
+            const username = usernameInput.value.trim();
+
+            if (!username) {
+                showToast('请输入用户名', 'warning');
+                return;
+            }
+
+            try {
+                await fetch(`${API_BASE}/kong/consumers`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username })
+                });
+
+                showToast(`消费者 "${username}" 创建成功`, 'success');
+                usernameInput.value = '';
+                toggleConsumerForm();
+                refreshConsumers();
+            } catch (error) {
+                console.error('创建消费者失败:', error);
+                showToast('创建消费者失败', 'error');
+            }
+        }
+
+        async function deleteConsumer(consumerId, username) {
+            // if (!confirm(`确定要删除消费者 "${username}" 吗？`)) return;
+
+            try {
+                await fetch(`${API_BASE}/kong/consumers/${consumerId}`, { method: 'DELETE' });
+                showToast(`消费者 "${username}" 已删除`, 'success');
+                refreshConsumers();
+            } catch (error) {
+                console.error('删除消费者失败:', error);
+                showToast('删除消费者失败', 'error');
+            }
+        }
+
+        function updateConsumersList() {
+            const container = document.getElementById('consumers-list');
+
+            if (kongConsumers.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">👥</div>
+                        <p>暂无消费者</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = kongConsumers.map(consumer => `
+                <div class="backend-item" style="grid-template-columns: 1fr auto; padding: 20px;">
+                    <div class="backend-info">
+                        <h4 style="font-size: 16px; margin-bottom: 8px;">👤 ${consumer.username}</h4>
+                        <div style="font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; margin-bottom: 12px;">
+                            ID: ${consumer.id}
+                        </div>
+                        
+                        <!-- 凭据部分 -->
+                        <div class="credentials-section" id="credentials-${consumer.id}" style="margin-top: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">🔑 API Keys (key-auth)</span>
+                                <button class="btn btn-secondary" style="padding: 2px 8px; font-size: 11px;" onclick="createConsumerKey('${consumer.id}')">+ 生成</button>
+                            </div>
+                            <div id="keys-list-${consumer.id}" class="keys-list">
+                                <div style="font-size: 11px; color: var(--text-muted); font-style: italic;">加载中...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="backend-actions">
+                        <button class="btn-icon danger" onclick="deleteConsumer('${consumer.id}', '${consumer.username}')" title="删除">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+
+            // 加载每个消费者的 Key
+            kongConsumers.forEach(c => refreshConsumerKeys(c.id));
+        }
+
+        async function refreshConsumerKeys(consumerId) {
+            const container = document.getElementById(`keys-list-${consumerId}`);
+            try {
+                const keys = await fetch(`${API_BASE}/kong/consumers/${consumerId}/keys`).then(r => r.json());
+                const keyData = keys.data || [];
+
+                if (keyData.length === 0) {
+                    container.innerHTML = '<div style="font-size: 11px; color: var(--text-muted);">暂无 API Key</div>';
+                    return;
+                }
+
+                container.innerHTML = keyData.map(k => `
+                    <div style="display: flex; align-items: center; gap: 8px; background: var(--bg-card); padding: 4px 8px; border-radius: 4px; margin-bottom: 4px; border: 1px solid var(--border);">
+                        <code style="flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent-cyan); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${k.key}</code>
+                        <button class="btn-icon danger" style="width: 24px; height: 24px; font-size: 12px;" onclick="deleteConsumerKey('${consumerId}', '${k.id}')" title="删除">🗑️</button>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error(`刷新 Key 失败 (Consumer: ${consumerId}):`, error);
+                container.innerHTML = '<div style="font-size: 11px; color: var(--accent-red);">加载失败</div>';
+            }
+        }
+
+        async function createConsumerKey(consumerId) {
+            try {
+                await fetch(`${API_BASE}/kong/consumers/${consumerId}/keys`, { method: 'POST' });
+                showToast('API Key 生成成功', 'success');
+                refreshConsumerKeys(consumerId);
+            } catch (error) {
+                console.error('生成 Key 失败:', error);
+                showToast('生成 Key 失败', 'error');
+            }
+        }
+
+        async function deleteConsumerKey(consumerId, keyId) {
+            // if (!confirm('确定要删除此 API Key 吗？')) return;
+
+            try {
+                await fetch(`${API_BASE}/kong/consumers/${consumerId}/keys/${keyId}`, { method: 'DELETE' });
+                showToast('API Key 已删除', 'success');
+                refreshConsumerKeys(consumerId);
+            } catch (error) {
+                console.error('删除 Key 失败:', error);
+                showToast('删除 Key 失败', 'error');
+            }
+        }
     </script>
 </body>
+
 </html>

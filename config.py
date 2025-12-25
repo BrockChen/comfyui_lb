@@ -1,6 +1,7 @@
 """
 ComfyUI 负载均衡器配置管理
 """
+import os
 import yaml
 from pathlib import Path
 from typing import Optional
@@ -78,33 +79,71 @@ class Settings(BaseSettings):
 
     @classmethod
     def from_yaml(cls, path: str | Path) -> "Settings":
-        """从YAML文件加载配置"""
+        """从YAML文件加载配置，环境变量会覆盖YAML中的值"""
         path = Path(path)
-        if not path.exists():
-            return cls()
         
-        with open(path, "r", encoding="utf-8") as f:
-            data = yaml.safe_load(f) or {}
+        yaml_data = {}
+        if path.exists():
+            with open(path, "r", encoding="utf-8") as f:
+                yaml_data = yaml.safe_load(f) or {}
         
-        return cls(**data)
+        # 创建实例：先使用 YAML 数据，然后 Pydantic Settings 会自动用环境变量覆盖
+        # 环境变量的优先级高于 YAML 文件
+        return cls(**yaml_data)
 
 
 def load_config(config_path: Optional[str] = None) -> Settings:
-    """加载配置"""
+    """加载配置，环境变量会覆盖YAML配置"""
+    # 确定配置文件路径
+    yaml_path = None
     if config_path:
-        return Settings.from_yaml(config_path)
+        yaml_path = Path(config_path)
+    else:
+        # 尝试默认配置文件
+        default_paths = [
+            Path("config.yaml"),
+            Path("config.yml"),
+            Path(__file__).parent / "config.yaml",
+        ]
+        for path in default_paths:
+            if path.exists():
+                yaml_path = path
+                break
     
-    # 尝试默认配置文件
-    default_paths = [
-        Path("config.yaml"),
-        Path("config.yml"),
-        Path(__file__).parent / "config.yaml",
-    ]
+    # 加载 YAML 配置
+    yaml_data = {}
+    if yaml_path and yaml_path.exists():
+        with open(yaml_path, "r", encoding="utf-8") as f:
+            yaml_data = yaml.safe_load(f) or {}
     
-    for path in default_paths:
-        if path.exists():
-            return Settings.from_yaml(path)
+    # 手动处理嵌套环境变量（Pydantic Settings 对嵌套模型的环境变量支持有限）
+    env_prefix = "COMFYUI_LB_"
     
-    return Settings()
+    # 处理 kong.admin_url
+    kong_admin_url = os.getenv(f"{env_prefix}KONG__ADMIN_URL")
+    if kong_admin_url:
+        if "kong" not in yaml_data:
+            yaml_data["kong"] = {}
+        yaml_data["kong"]["admin_url"] = kong_admin_url
+    
+    # 处理 kong.enabled
+    kong_enabled = os.getenv(f"{env_prefix}KONG__ENABLED")
+    if kong_enabled:
+        if "kong" not in yaml_data:
+            yaml_data["kong"] = {}
+        yaml_data["kong"]["enabled"] = kong_enabled.lower() in ("true", "1", "yes", "on")
+    
+    # 处理 kong.timeout
+    kong_timeout = os.getenv(f"{env_prefix}KONG__TIMEOUT")
+    if kong_timeout:
+        if "kong" not in yaml_data:
+            yaml_data["kong"] = {}
+        try:
+            yaml_data["kong"]["timeout"] = float(kong_timeout)
+        except ValueError:
+            pass
+    
+    # 创建 Settings 实例（环境变量会通过 Pydantic Settings 自动处理）
+    return Settings(**yaml_data)
 
 
