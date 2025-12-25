@@ -1,0 +1,41 @@
+version: 0.0.1
+type: plugin
+author: comfyui-plugin
+name: comfyui
+description:
+  en_US: ComfyUI integration plugin for Dify, enabling AI image generation through ComfyUI workflow API
+  zh_Hans: Dify 的 ComfyUI 集成插件，通过 ComfyUI workflow API 实现 AI 图像生成
+icon: icon.svg
+label:
+  en_US: ComfyUI
+  zh_Hans: ComfyUI
+created_at: 2025-12-21T00:00:00Z
+
+resource:
+  memory: 512
+  permission:
+    tool:
+      enabled: true
+    model:
+      enabled: false
+    endpoint:
+      enabled: false
+    app:
+      enabled: false
+    storage:
+      enabled: true
+      size: 1024
+
+plugins:
+  tools:
+    - provider/comfyui.yaml
+
+meta:
+  version: 0.0.1
+  arch:
+    - amd64
+    - arm64
+  runner:
+    language: python
+    version: "3.12"
+    entrypoint: main
