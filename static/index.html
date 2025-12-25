@@ -1,272 +1,1016 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ComfyUI Load Balancer</title>
+    <title>ComfyUI 负载均衡器</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="static/css/style.css">
-</head>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e14;
+            --bg-secondary: #131920;
+            --bg-card: #1a2028;
+            --bg-card-hover: #222a35;
+            --border: #2a3545;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --accent-cyan: #39c5bb;
+            --accent-green: #3fb950;
+            --accent-yellow: #d29922;
+            --accent-red: #f85149;
+            --accent-blue: #58a6ff;
+            --accent-purple: #a371f7;
+            --gradient-start: #39c5bb;
+            --gradient-end: #58a6ff;
+        }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* 背景效果 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(57, 197, 187, 0.15), transparent),
+                radial-gradient(ellipse 60% 40% at 100% 0%, rgba(88, 166, 255, 0.1), transparent);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* 头部 */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--bg-primary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .refresh-info {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: var(--bg-primary);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(57, 197, 187, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-cyan);
+        }
+
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--card-accent), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--card-accent);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-card.cyan { --card-accent: var(--accent-cyan); }
+        .stat-card.green { --card-accent: var(--accent-green); }
+        .stat-card.yellow { --card-accent: var(--accent-yellow); }
+        .stat-card.red { --card-accent: var(--accent-red); }
+        .stat-card.blue { --card-accent: var(--accent-blue); }
+        .stat-card.purple { --card-accent: var(--accent-purple); }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--card-accent);
+            line-height: 1;
+        }
+
+        .stat-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* 主要内容区域 */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 24px;
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 面板 */
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-title .icon {
+            width: 32px;
+            height: 32px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .panel-body {
+            padding: 20px 24px;
+        }
+
+        /* 后端列表 */
+        .backend-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .backend-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: grid;
+            grid-template-columns: auto 1fr auto auto;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .backend-item:hover {
+            border-color: var(--accent-cyan);
+            background: var(--bg-card-hover);
+        }
+
+        .backend-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .backend-status.healthy {
+            background: var(--accent-green);
+            box-shadow: 0 0 12px var(--accent-green);
+        }
+
+        .backend-status.unhealthy {
+            background: var(--accent-red);
+            box-shadow: 0 0 12px var(--accent-red);
+        }
+
+        .backend-status.unknown {
+            background: var(--text-muted);
+        }
+
+        .backend-status::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px solid currentColor;
+            opacity: 0.3;
+        }
+
+        .backend-status.healthy::before { border-color: var(--accent-green); }
+        .backend-status.unhealthy::before { border-color: var(--accent-red); }
+
+        .backend-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .backend-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .backend-queue {
+            text-align: center;
+            padding: 8px 16px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            min-width: 80px;
+        }
+
+        .backend-queue .value {
+            font-size: 20px;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-cyan);
+        }
+
+        .backend-queue .label {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .backend-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 8px;
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            font-size: 16px;
+        }
+
+        .btn-icon:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-primary);
+        }
+
+        .btn-icon.danger:hover {
+            background: var(--accent-red);
+        }
+
+        /* 任务队列 */
+        .queue-section {
+            margin-bottom: 24px;
+        }
+
+        .queue-title {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .queue-badge {
+            background: var(--bg-secondary);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-cyan);
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .task-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .task-list::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+            border-radius: 3px;
+        }
+
+        .task-list::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .task-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .task-item:hover {
+            border-color: var(--accent-cyan);
+        }
+
+        .task-id {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--text-secondary);
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .task-status {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .task-status.queued {
+            background: rgba(57, 197, 187, 0.15);
+            color: var(--accent-cyan);
+        }
+
+        .task-status.dispatched {
+            background: rgba(88, 166, 255, 0.15);
+            color: var(--accent-blue);
+        }
+
+        .task-status.running {
+            background: rgba(210, 153, 34, 0.15);
+            color: var(--accent-yellow);
+        }
+
+        .task-status.completed {
+            background: rgba(63, 185, 80, 0.15);
+            color: var(--accent-green);
+        }
+
+        .task-status.failed {
+            background: rgba(248, 81, 73, 0.15);
+            color: var(--accent-red);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* 添加后端表单 */
+        .add-backend-form {
+            display: none;
+            padding: 20px 24px;
+            border-top: 1px solid var(--border);
+            background: var(--bg-secondary);
+        }
+
+        .add-backend-form.show {
+            display: block;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 80px;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .form-group input {
+            padding: 10px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 3px rgba(57, 197, 187, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        /* 策略选择器 */
+        .strategy-selector {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .strategy-btn {
+            padding: 8px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .strategy-btn:hover {
+            border-color: var(--accent-cyan);
+            color: var(--text-primary);
+        }
+
+        .strategy-btn.active {
+            background: var(--accent-cyan);
+            color: var(--bg-primary);
+            border-color: var(--accent-cyan);
+        }
+
+        /* 实时日志 */
+        .log-container {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            padding: 4px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-time {
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .log-message {
+            color: var(--text-secondary);
+        }
+
+        .log-message.success { color: var(--accent-green); }
+        .log-message.error { color: var(--accent-red); }
+        .log-message.info { color: var(--accent-cyan); }
+
+        /* 动画 */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: slideIn 0.3s ease forwards;
+        }
+    </style>
+</head>
 <body>
     <div class="container">
-        <!-- Header -->
-        <header class="glass">
+        <!-- 头部 -->
+        <header>
             <div class="logo">
                 <div class="logo-icon">LB</div>
-                <div class="logo-text">
-                    <h1>ComfyUI Load Balancer</h1>
-                    <p>Distributed Task Management System</p>
+                <div>
+                    <h1>ComfyUI 负载均衡器</h1>
+                    <p>多实例任务分发与队列管理</p>
                 </div>
             </div>
             <div class="header-actions">
-                <button class="btn btn-secondary" onclick="app.refreshBackends()">
-                    <span style="font-size: 1.2em">↻</span> Refresh
+                <span class="refresh-info">自动刷新: <span id="refresh-countdown">5</span>s</span>
+                <button class="btn btn-secondary" onclick="refreshData()">
+                    <span>🔄</span> 刷新
+                </button>
+                <button class="btn btn-primary" onclick="triggerHealthCheck()">
+                    <span>💓</span> 健康检查
                 </button>
             </div>
         </header>
 
-        <!-- Navigation -->
-        <div class="nav-tabs glass">
-            <button class="nav-btn active" data-tab="dashboard">
-                <span>📊</span> Dashboard
-            </button>
-            <button class="nav-btn" data-tab="backends">
-                <span>🖥️</span> Backends
-            </button>
-            <button class="nav-btn" data-tab="kong">
-                <span>🦍</span> Kong Gateway
-            </button>
-        </div>
-
-        <!-- Dashboard Tab -->
-        <div id="tab-dashboard" class="tab-content">
-            <!-- Stats -->
-            <div class="stats-grid">
-                <div class="glass stat-card">
-                    <div class="stat-label"><span>📊</span> Total Backends</div>
-                    <div class="stat-value" id="stat-total">-</div>
-                </div>
-                <div class="glass stat-card">
-                    <div class="stat-label"><span style="color: var(--success)">●</span> Healthy</div>
-                    <div class="stat-value" id="stat-healthy">-</div>
-                </div>
-                <div class="glass stat-card">
-                    <div class="stat-label"><span style="color: var(--accent-primary)">●</span> Idle</div>
-                    <div class="stat-value" id="stat-idle">-</div>
-                </div>
-                <div class="glass stat-card">
-                    <div class="stat-label"><span style="color: var(--warning)">●</span> Pending Tasks</div>
-                    <div class="stat-value" id="stat-pending">-</div>
-                </div>
-                <div class="glass stat-card">
-                    <div class="stat-label"><span style="color: var(--accent-secondary)">●</span> Dispatched</div>
-                    <div class="stat-value" id="stat-dispatched">-</div>
-                </div>
+        <!-- 统计卡片 -->
+        <div class="stats-grid">
+            <div class="stat-card cyan">
+                <div class="stat-label">📊 总后端数</div>
+                <div class="stat-value" id="stat-total">-</div>
+                <div class="stat-sub">已配置的 ComfyUI 实例</div>
             </div>
-
-            <div class="grid-2">
-                <!-- Task Queue -->
-                <div class="glass glass-panel">
-                    <div class="panel-header">
-                        <div class="panel-title"><span>📋</span> Task Queue</div>
-                    </div>
-                    <div class="panel-body">
-                        <div id="pending-tasks">
-                            <!-- Tasks will be injected here -->
-                            <div class="text-center text-secondary">Loading...</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recent Activity/Logs (Placeholder) -->
-                <div class="glass glass-panel">
-                    <div class="panel-header">
-                        <div class="panel-title"><span>⚙️</span> Scheduler Strategy</div>
-                    </div>
-                    <div class="panel-body">
-                        <div id="strategy-selector" class="flex gap-2">
-                            <button class="btn btn-secondary strategy-btn" data-strategy="least_busy">Least
-                                Busy</button>
-                            <button class="btn btn-secondary strategy-btn" data-strategy="round_robin">Round
-                                Robin</button>
-                            <button class="btn btn-secondary strategy-btn" data-strategy="weighted">Weighted</button>
-                        </div>
-                    </div>
-                </div>
+            <div class="stat-card green">
+                <div class="stat-label">✅ 健康后端</div>
+                <div class="stat-value" id="stat-healthy">-</div>
+                <div class="stat-sub">正常运行中</div>
+            </div>
+            <div class="stat-card blue">
+                <div class="stat-label">💤 空闲后端</div>
+                <div class="stat-value" id="stat-idle">-</div>
+                <div class="stat-sub">可接收新任务</div>
+            </div>
+            <div class="stat-card yellow">
+                <div class="stat-label">⏳ 等待队列</div>
+                <div class="stat-value" id="stat-pending">-</div>
+                <div class="stat-sub">待分发任务</div>
+            </div>
+            <div class="stat-card purple">
+                <div class="stat-label">🚀 进行中</div>
+                <div class="stat-value" id="stat-dispatched">-</div>
+                <div class="stat-sub">已分发执行</div>
             </div>
         </div>
 
-        <!-- Backends Tab -->
-        <div id="tab-backends" class="tab-content" style="display: none;">
-            <div class="glass glass-panel">
+        <!-- 主要内容 -->
+        <div class="main-grid">
+            <!-- 后端列表 -->
+            <div class="panel">
                 <div class="panel-header">
-                    <div class="panel-title"><span>🖥️</span> Backend Instances</div>
-                    <button class="btn btn-primary" onclick="// Add backend modal logic">
-                        + Add Backend
+                    <div class="panel-title">
+                        <span class="icon">🖥️</span>
+                        后端实例
+                    </div>
+                    <button class="btn btn-secondary" onclick="toggleAddForm()">
+                        <span>➕</span> 添加后端
                     </button>
                 </div>
-                <div class="panel-body" id="backend-list">
-                    <!-- Backend list -->
+                
+                <!-- 添加后端表单 -->
+                <div class="add-backend-form" id="add-backend-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>名称</label>
+                            <input type="text" id="backend-name" placeholder="comfy-3">
+                        </div>
+                        <div class="form-group">
+                            <label>地址</label>
+                            <input type="text" id="backend-host" placeholder="127.0.0.1" value="127.0.0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>端口</label>
+                            <input type="number" id="backend-port" placeholder="8190">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-secondary" onclick="toggleAddForm()">取消</button>
+                        <button class="btn btn-primary" onclick="addBackend()">添加</button>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Kong Tab -->
-        <div id="tab-kong" class="tab-content" style="display: none;">
-            <div class="glass glass-panel mb-6">
                 <div class="panel-body">
-                    <div id="kong-status" class="flex items-center gap-2">
-                        <div class="status-dot"></div>
-                        <span id="kong-status-text">Checking Kong status...</span>
+                    <div class="backend-list" id="backend-list">
+                        <div class="empty-state loading">
+                            <div class="icon">⏳</div>
+                            <p>加载中...</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Kong Stats -->
-            <div class="stats-grid mb-6">
-                <div class="glass stat-card">
-                    <div class="stat-label"><span style="color: var(--warning)">🔌</span> Services</div>
-                    <div class="stat-value" id="kong-services-count">-</div>
-                </div>
-                <div class="glass stat-card">
-                    <div class="stat-label"><span style="color: var(--accent-primary)">🛤️</span> Routes</div>
-                    <div class="stat-value" id="kong-routes-count">-</div>
-                </div>
-                <div class="glass stat-card">
-                    <div class="stat-label"><span style="color: var(--accent-secondary)">🔌</span> Plugins</div>
-                    <div class="stat-value" id="kong-plugins-count">-</div>
-                </div>
-                <div class="glass stat-card">
-                    <div class="stat-label"><span style="color: var(--success)">👤</span> Consumers</div>
-                    <div class="stat-value" id="kong-consumers-count">-</div>
-                </div>
-            </div>
-
-            <div class="grid-2">
-                <!-- Services & Routes -->
-                <div class="glass glass-panel">
+            <!-- 右侧面板 -->
+            <div style="display: flex; flex-direction: column; gap: 24px;">
+                <!-- 调度策略 -->
+                <div class="panel">
                     <div class="panel-header">
-                        <div class="panel-title"><span>🔌</span> Services & Routes</div>
-                        <button class="btn btn-primary" onclick="app.openServiceForm()">+ Add Service</button>
-                    </div>
-
-                    <!-- Forms -->
-                    <div class="form-panel hidden" id="service-form">
-                        <div class="form-header">Add Service</div>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Name</label>
-                                <input type="text" id="service-name" class="form-input" placeholder="comfyui">
-                            </div>
-                            <div class="form-group">
-                                <label>Upstream URL</label>
-                                <input type="text" id="service-url" class="form-input"
-                                    placeholder="http://127.0.0.1:8188">
-                            </div>
-                        </div>
-                        <div class="form-actions">
-                            <button class="btn btn-secondary" onclick="app.toggleForm('service-form')">Cancel</button>
-                            <button class="btn btn-primary" onclick="app.createService()">Create</button>
+                        <div class="panel-title">
+                            <span class="icon">⚙️</span>
+                            调度策略
                         </div>
                     </div>
-
-                    <div class="form-panel hidden" id="route-form">
-                        <div class="form-header">Add Route for <span id="route-service-name-disp"></span></div>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Service</label>
-                                <select id="route-service-select" class="form-input"></select>
-                            </div>
-                            <div class="form-group">
-                                <label>Name</label>
-                                <input type="text" id="route-name" class="form-input" placeholder="comfyui-route">
-                            </div>
-                            <div class="form-group">
-                                <label>Path</label>
-                                <input type="text" id="route-path" class="form-input" placeholder="/comfyui">
-                            </div>
+                    <div class="panel-body">
+                        <div class="strategy-selector" id="strategy-selector">
+                            <button class="strategy-btn" data-strategy="least_busy">最少忙碌</button>
+                            <button class="strategy-btn" data-strategy="round_robin">轮询</button>
+                            <button class="strategy-btn" data-strategy="weighted">加权</button>
                         </div>
-                        <div class="form-actions">
-                            <button class="btn btn-secondary" onclick="app.toggleForm('route-form')">Cancel</button>
-                            <button class="btn btn-primary" onclick="app.createRoute()">Create</button>
-                        </div>
-                    </div>
-
-                    <div class="panel-body" id="kong-services-list">
-                        <div class="text-center text-secondary">Loading...</div>
                     </div>
                 </div>
 
-                <!-- Consumers & Plugins -->
-                <div class="glass glass-panel">
+                <!-- 任务队列 -->
+                <div class="panel" style="flex: 1;">
                     <div class="panel-header">
-                        <div class="panel-title"><span>👤</span> Consumers & Plugins</div>
-                        <button class="btn btn-primary" onclick="app.openConsumerForm()">+ Add Consumer</button>
-                    </div>
-
-                    <!-- Forms -->
-                    <div class="form-panel hidden" id="consumer-form">
-                        <div class="form-header">Add Consumer</div>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Username</label>
-                                <input type="text" id="consumer-username" class="form-input" placeholder="user1">
-                            </div>
-                        </div>
-                        <div class="form-actions">
-                            <button class="btn btn-secondary" onclick="app.toggleForm('consumer-form')">Cancel</button>
-                            <button class="btn btn-primary" onclick="app.createConsumer()">Create</button>
+                        <div class="panel-title">
+                            <span class="icon">📋</span>
+                            任务队列
                         </div>
                     </div>
-
-                    <div class="form-panel hidden" id="plugin-form">
-                        <div class="form-header">Add Plugin for <span id="plugin-consumer-name-disp"></span></div>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Consumer (Optional)</label>
-                                <select id="plugin-consumer-select" class="form-input">
-                                    <option value="">Global (No Consumer)</option>
-                                </select>
+                    <div class="panel-body">
+                        <!-- 等待中 -->
+                        <div class="queue-section">
+                            <div class="queue-title">
+                                等待分发 <span class="queue-badge" id="pending-count">0</span>
                             </div>
-                            <div class="form-group">
-                                <label>Service (Optional)</label>
-                                <select id="plugin-service-select" class="form-input">
-                                    <option value="">Global (No Service)</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Plugin</label>
-                                <select id="plugin-name" class="form-input">
-                                    <option value="key-auth">key-auth</option>
-                                    <option value="rate-limiting">rate-limiting</option>
-                                    <option value="cors">cors</option>
-                                    <option value="request-transformer">request-transformer</option>
-                                </select>
+                            <div class="task-list" id="pending-tasks">
+                                <div class="empty-state">
+                                    <p>暂无等待任务</p>
+                                </div>
                             </div>
                         </div>
-                        <div class="form-actions">
-                            <button class="btn btn-secondary" onclick="app.toggleForm('plugin-form')">Cancel</button>
-                            <button class="btn btn-primary" onclick="app.createPlugin()">Create</button>
-                        </div>
-                    </div>
 
-                    <div class="panel-body" id="kong-consumers-list">
-                        <div class="text-center text-secondary">Loading...</div>
+                        <!-- 进行中 -->
+                        <div class="queue-section">
+                            <div class="queue-title">
+                                执行中 <span class="queue-badge" id="dispatched-count">0</span>
+                            </div>
+                            <div class="task-list" id="dispatched-tasks">
+                                <div class="empty-state">
+                                    <p>暂无执行任务</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="toast-container" class="toast-container"></div>
+    <script>
+        const API_BASE = '';
+        let refreshInterval = null;
+        let countdown = 5;
 
-    <script src="static/js/app.js"></script>
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            refreshData();
+            startAutoRefresh();
+            initStrategyButtons();
+        });
+
+        // 自动刷新
+        function startAutoRefresh() {
+            countdown = 5;
+            refreshInterval = setInterval(() => {
+                countdown--;
+                document.getElementById('refresh-countdown').textContent = countdown;
+                if (countdown <= 0) {
+                    refreshData();
+                    countdown = 5;
+                }
+            }, 1000);
+        }
+
+        // 刷新数据
+        async function refreshData() {
+            try {
+                const [stats, tasks, scheduler] = await Promise.all([
+                    fetch(`${API_BASE}/lb/stats`).then(r => r.json()),
+                    fetch(`${API_BASE}/lb/tasks`).then(r => r.json()),
+                    fetch(`${API_BASE}/lb/scheduler`).then(r => r.json())
+                ]);
+
+                updateStats(stats);
+                updateBackendList(stats.backends);
+                updateTaskLists(tasks);
+                updateStrategyButtons(scheduler.strategy);
+            } catch (error) {
+                console.error('刷新失败:', error);
+            }
+        }
+
+        // 更新统计
+        function updateStats(stats) {
+            document.getElementById('stat-total').textContent = stats.total_backends;
+            document.getElementById('stat-healthy').textContent = stats.healthy_backends;
+            document.getElementById('stat-idle').textContent = stats.idle_backends;
+            document.getElementById('stat-pending').textContent = stats.queue_status.pending;
+            document.getElementById('stat-dispatched').textContent = stats.queue_status.dispatched;
+        }
+
+        // 更新后端列表
+        function updateBackendList(backends) {
+            const container = document.getElementById('backend-list');
+            
+            if (backends.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">🖥️</div>
+                        <p>暂无后端实例</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = backends.map(backend => `
+                <div class="backend-item animate-in">
+                    <div class="backend-status ${backend.status}"></div>
+                    <div class="backend-info">
+                        <h4>${backend.name}</h4>
+                        <p>${backend.base_url}</p>
+                    </div>
+                    <div class="backend-queue">
+                        <div class="value">${backend.queue_pending + backend.queue_running}</div>
+                        <div class="label">队列</div>
+                    </div>
+                    <div class="backend-actions">
+                        ${backend.enabled 
+                            ? `<button class="btn-icon" onclick="toggleBackend('${backend.name}', false)" title="禁用">⏸️</button>`
+                            : `<button class="btn-icon" onclick="toggleBackend('${backend.name}', true)" title="启用">▶️</button>`
+                        }
+                        <button class="btn-icon danger" onclick="removeBackend('${backend.name}')" title="移除">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 更新任务列表
+        function updateTaskLists(tasks) {
+            const pendingContainer = document.getElementById('pending-tasks');
+            const dispatchedContainer = document.getElementById('dispatched-tasks');
+            
+            document.getElementById('pending-count').textContent = tasks.pending.length;
+            document.getElementById('dispatched-count').textContent = tasks.dispatched.length;
+
+            if (tasks.pending.length === 0) {
+                pendingContainer.innerHTML = '<div class="empty-state"><p>暂无等待任务</p></div>';
+            } else {
+                pendingContainer.innerHTML = tasks.pending.slice(0, 10).map(task => `
+                    <div class="task-item">
+                        <span class="task-id">${task.id.substring(0, 8)}...</span>
+                        <span class="task-status queued">等待中</span>
+                    </div>
+                `).join('');
+            }
+
+            if (tasks.dispatched.length === 0) {
+                dispatchedContainer.innerHTML = '<div class="empty-state"><p>暂无执行任务</p></div>';
+            } else {
+                dispatchedContainer.innerHTML = tasks.dispatched.slice(0, 10).map(task => `
+                    <div class="task-item">
+                        <span class="task-id" title="${task.backend_name}">${task.id.substring(0, 8)}... → ${task.backend_name}</span>
+                        <span class="task-status dispatched">执行中</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // 初始化策略按钮
+        function initStrategyButtons() {
+            document.querySelectorAll('.strategy-btn').forEach(btn => {
+                btn.addEventListener('click', () => setStrategy(btn.dataset.strategy));
+            });
+        }
+
+        // 更新策略按钮状态
+        function updateStrategyButtons(currentStrategy) {
+            document.querySelectorAll('.strategy-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.strategy === currentStrategy);
+            });
+        }
+
+        // 设置调度策略
+        async function setStrategy(strategy) {
+            try {
+                await fetch(`${API_BASE}/lb/scheduler/strategy/${strategy}`, { method: 'POST' });
+                refreshData();
+            } catch (error) {
+                console.error('设置策略失败:', error);
+            }
+        }
+
+        // 触发健康检查
+        async function triggerHealthCheck() {
+            try {
+                await fetch(`${API_BASE}/lb/health-check`, { method: 'POST' });
+                refreshData();
+            } catch (error) {
+                console.error('健康检查失败:', error);
+            }
+        }
+
+        // 切换添加表单
+        function toggleAddForm() {
+            const form = document.getElementById('add-backend-form');
+            form.classList.toggle('show');
+        }
+
+        // 添加后端
+        async function addBackend() {
+            const name = document.getElementById('backend-name').value;
+            const host = document.getElementById('backend-host').value;
+            const port = parseInt(document.getElementById('backend-port').value);
+
+            if (!name || !host || !port) {
+                alert('请填写完整信息');
+                return;
+            }
+
+            try {
+                await fetch(`${API_BASE}/lb/backends`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, host, port, weight: 1, max_queue: 10, enabled: true })
+                });
+                toggleAddForm();
+                document.getElementById('backend-name').value = '';
+                document.getElementById('backend-port').value = '';
+                refreshData();
+            } catch (error) {
+                console.error('添加后端失败:', error);
+            }
+        }
+
+        // 移除后端
+        async function removeBackend(name) {
+            if (!confirm(`确定要移除后端 "${name}" 吗?`)) return;
+            
+            try {
+                await fetch(`${API_BASE}/lb/backends/${name}`, { method: 'DELETE' });
+                refreshData();
+            } catch (error) {
+                console.error('移除后端失败:', error);
+            }
+        }
+
+        // 启用/禁用后端
+        async function toggleBackend(name, enable) {
+            try {
+                const action = enable ? 'enable' : 'disable';
+                await fetch(`${API_BASE}/lb/backends/${name}/${action}`, { method: 'POST' });
+                refreshData();
+            } catch (error) {
+                console.error('操作失败:', error);
+            }
+        }
+    </script>
 </body>
-
 </html>
+

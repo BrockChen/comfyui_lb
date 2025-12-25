@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 数据库（Kong 的配置存储）
+  kong-db:
+    image: postgres:13
+    container_name: kong-db
+    restart: always
+    environment:
+      POSTGRES_USER: kong
+      POSTGRES_DB: kong
+      POSTGRES_PASSWORD: kong
+    networks:
+      - kong-net
+    volumes:
+      - kong_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kong"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 初始化 Kong 数据库（仅首次运行时执行）
+  kong-migrations:
+    image: kong:3.7
+    container_name: kong-migrations
+    command: kong migrations bootstrap
+    depends_on:
+      kong-db:
+        condition: service_healthy
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-db
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+      KONG_PG_DATABASE: kong
+    networks:
+      - kong-net
+
+  # Kong Gateway（数据平面）
+  kong:
+    image: kong:3.7
+    container_name: kong
+    restart: always
+    depends_on:
+      kong-migrations:
+        condition: service_completed_successfully
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-db
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+      KONG_PG_DATABASE: kong
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: "0.0.0.0:8001, 0.0.0.0:8444 ssl"
+    networks:
+      - kong-net
+    ports:
+      - "8000:8000"   # HTTP 代理端口
+      - "8443:8443"   # HTTPS 代理端口
+      - "8001:8001"   # Admin API
+      - "8444:8444"   # Admin API (SSL)
+    healthcheck:
+      test: ["CMD", "kong", "health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ComfyUI Load Balancer 应用
+  comfyui-lb:
+    build: .
+    container_name: comfyui-lb
+    restart: always
+    depends_on:
+      kong:
+        condition: service_healthy
+    environment:
+      - COMFYUI_LB_KONG__ADMIN_URL=http://kong:8001
+    ports:
+      - "8100:8100"   # 管理界面和 API
+    networks:
+      - kong-net
+    volumes:
+      - ./config.yaml:/app/config.yaml
+
+volumes:
+  kong_db_data:
+
+networks:
+  kong-net:
+    driver: bridge

@@ -44,16 +44,26 @@ async def dispatch_task(task, app_state) -> bool:
         return False
     
     try:
-        # 提交到后端
+        # 获取该后端的桥接ID，用于向后端“伪装”身份
+        bridge_sid = app_state.ws_manager.get_backend_bridge_id(backend.name)
+        
+        # 预先记录关联，确保能收到该后端的启动消息
+        if task.client_id:
+            await app_state.ws_manager.associate_client_with_backend(task.client_id, backend.name)
+            
+        # 提交到后端 (使用桥接SID以便LB能收到消息)
         result = await app_state.backend_manager.submit_prompt(
             backend.name,
             task.prompt,
-            task.client_id
+            bridge_sid or task.client_id
         )
         
-        # 标记已分发
-        prompt_id = result.get("prompt_id", task.id)
-        await app_state.task_queue.mark_dispatched(task, backend.name, prompt_id)
+        backend_prompt_id = result.get("prompt_id")
+        if backend_prompt_id and task.client_id:
+            # 建立由后端任务ID到用户ID的映射
+            await app_state.ws_manager.register_prompt(backend_prompt_id, task.client_id, task.id)
+            
+        await app_state.task_queue.mark_dispatched(task, backend.name, backend_prompt_id)
         
         # 更新后端队列状态
         backend.queue_pending += 1
@@ -94,6 +104,11 @@ async def lifespan(app: FastAPI):
     # 初始化WebSocket管理器
     ws_manager = WebSocketManager()
     app.state.ws_manager = ws_manager
+
+    # 初始化后端WS桥接
+    for backend_config in settings.backends:
+        if backend_config.enabled:
+            await ws_manager.add_backend(backend_config.name, backend_config.base_url)
 
     # 初始化任务队列
     task_queue = TaskQueue(settings, ws_manager)

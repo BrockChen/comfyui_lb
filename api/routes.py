@@ -5,7 +5,7 @@ import logging
 from typing import Any, Optional
 
 from fastapi import APIRouter, HTTPException, Request, Response
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 import httpx
 
 from models import (
@@ -178,6 +178,9 @@ async def get_history_by_id(request: Request, prompt_id: str) -> dict:
             history = await state.backend_manager.get_backend_history(
                 task.backend_name, task.prompt_id
             )
+            # 将后端的 prompt_id 映射回 LB 的 prompt_id
+            if task.prompt_id in history:
+                history[prompt_id] = history.pop(task.prompt_id)
             return history
         except Exception as e:
             logger.warning(f"获取后端历史失败: {e}")
@@ -267,6 +270,60 @@ async def get_extensions(request: Request) -> list:
         return response.json()
 
 
+@router.get("/view")
+async def view_image(
+    request: Request, 
+    filename: str, 
+    subfolder: str = "", 
+    type: str = "output",
+    backend: Optional[str] = None
+) -> Response:
+    """获取/预览图像 - 代理到后端"""
+    state = get_app_state(request)
+    
+    # 如果指定了后端,直接使用
+    if backend:
+        backend_obj = state.backend_manager.get_backend(backend)
+    else:
+        # 如果未指定,尝试从所有健康后端中搜索(这里简单处理,默认取第一个或基于其它逻辑)
+        # 实际生产中,客户端应该根据history中的信息知道去哪个后端取,或者LB全局维护文件索引
+        backends = state.backend_manager.get_healthy_backends()
+        if not backends:
+            raise HTTPException(status_code=503, detail="No healthy backend available")
+        backend_obj = backends[0]
+        
+    if not backend_obj:
+        raise HTTPException(status_code=404, detail=f"Backend {backend} not found")
+        
+    params = {
+        "filename": filename,
+        "subfolder": subfolder,
+        "type": type
+    }
+    
+    # 代理请求到后端
+    async with httpx.AsyncClient(timeout=60.0) as client:
+        try:
+            response = await client.get(f"{backend_obj.base_url}/view", params=params)
+            
+            if response.status_code != 200:
+                return Response(
+                    content=response.content, 
+                    status_code=response.status_code,
+                    media_type=response.headers.get("content-type")
+                )
+            
+            return Response(
+                content=response.content,
+                status_code=response.status_code,
+                media_type=response.headers.get("content-type"),
+                headers={k: v for k, v in response.headers.items() if k.lower() not in ["content-length", "content-encoding"]}
+            )
+        except Exception as e:
+            logger.error(f"代理图像请求失败: {e}")
+            raise HTTPException(status_code=502, detail=f"Failed to fetch image from backend: {e}")
+
+
 # ============ 负载均衡器管理 API ============
 
 @router.get("/lb/stats", response_model=SystemStats)
@@ -301,6 +358,11 @@ async def add_backend(request: Request, config: BackendConfig) -> BackendState:
     """添加后端"""
     state = get_app_state(request)
     backend = await state.backend_manager.register_backend(config)
+    
+    # 同时添加WS桥接
+    if backend.enabled:
+        await state.ws_manager.add_backend(backend.name, backend.base_url)
+        
     # 立即检查健康状态
     await state.backend_manager.check_backend_health(config.name)
     return backend
@@ -310,6 +372,10 @@ async def add_backend(request: Request, config: BackendConfig) -> BackendState:
 async def remove_backend(request: Request, name: str) -> dict:
     """移除后端"""
     state = get_app_state(request)
+    
+    # 同时移除WS桥接
+    await state.ws_manager.remove_backend(name)
+    
     success = await state.backend_manager.unregister_backend(name)
     if not success:
         raise HTTPException(status_code=404, detail="Backend not found")
