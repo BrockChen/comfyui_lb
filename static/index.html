@@ -70,6 +70,7 @@
             margin-bottom: 32px;
             padding-bottom: 24px;
             border-bottom: 1px solid var(--border);
+            animation: slideDown 0.5s ease;
         }
 
         .logo {
@@ -90,6 +91,8 @@
             font-weight: 700;
             color: var(--bg-primary);
             font-family: 'JetBrains Mono', monospace;
+            box-shadow: 0 4px 20px rgba(57, 197, 187, 0.3);
+            animation: pulse 2s ease-in-out infinite;
         }
 
         .logo h1 {
@@ -125,11 +128,31 @@
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             gap: 8px;
             font-family: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn-primary {
@@ -138,8 +161,8 @@
         }
 
         .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 20px rgba(57, 197, 187, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(57, 197, 187, 0.4);
         }
 
         .btn-secondary {
@@ -151,6 +174,7 @@
         .btn-secondary:hover {
             background: var(--bg-card-hover);
             border-color: var(--accent-cyan);
+            transform: translateY(-1px);
         }
 
         /* 统计卡片 */
@@ -166,10 +190,17 @@
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 24px;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
+            animation: fadeInUp 0.5s ease backwards;
         }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.15s; }
+        .stat-card:nth-child(3) { animation-delay: 0.2s; }
+        .stat-card:nth-child(4) { animation-delay: 0.25s; }
+        .stat-card:nth-child(5) { animation-delay: 0.3s; }
 
         .stat-card::before {
             content: '';
@@ -183,14 +214,30 @@
             transition: opacity 0.3s ease;
         }
 
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, var(--card-accent) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
         .stat-card:hover::before {
             opacity: 1;
         }
 
+        .stat-card:hover::after {
+            opacity: 0.05;
+        }
+
         .stat-card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-4px) scale(1.02);
             border-color: var(--card-accent);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
         }
 
         .stat-card.cyan { --card-accent: var(--accent-cyan); }
@@ -207,6 +254,8 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            position: relative;
+            z-index: 1;
         }
 
         .stat-value {
@@ -215,12 +264,21 @@
             font-family: 'JetBrains Mono', monospace;
             color: var(--card-accent);
             line-height: 1;
+            position: relative;
+            z-index: 1;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover .stat-value {
+            transform: scale(1.1);
         }
 
         .stat-sub {
             font-size: 12px;
             color: var(--text-muted);
             margin-top: 8px;
+            position: relative;
+            z-index: 1;
         }
 
         /* 主要内容区域 */
@@ -242,6 +300,7 @@
             border: 1px solid var(--border);
             border-radius: 16px;
             overflow: hidden;
+            animation: fadeInUp 0.5s ease 0.35s backwards;
         }
 
         .panel-header {
@@ -250,6 +309,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: linear-gradient(135deg, rgba(57, 197, 187, 0.05), transparent);
         }
 
         .panel-title {
@@ -291,12 +351,14 @@
             grid-template-columns: auto 1fr auto auto;
             align-items: center;
             gap: 16px;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .backend-item:hover {
             border-color: var(--accent-cyan);
             background: var(--bg-card-hover);
+            transform: translateX(4px);
+            box-shadow: 0 4px 16px rgba(57, 197, 187, 0.2);
         }
 
         .backend-status {
@@ -309,11 +371,13 @@
         .backend-status.healthy {
             background: var(--accent-green);
             box-shadow: 0 0 12px var(--accent-green);
+            animation: statusPulse 2s ease-in-out infinite;
         }
 
         .backend-status.unhealthy {
             background: var(--accent-red);
             box-shadow: 0 0 12px var(--accent-red);
+            animation: statusBlink 1s ease-in-out infinite;
         }
 
         .backend-status.unknown {
@@ -350,6 +414,11 @@
             background: var(--bg-card);
             border-radius: 8px;
             min-width: 80px;
+            transition: all 0.3s ease;
+        }
+
+        .backend-item:hover .backend-queue {
+            background: var(--bg-secondary);
         }
 
         .backend-queue .value {
@@ -380,17 +449,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-size: 16px;
         }
 
         .btn-icon:hover {
             background: var(--accent-cyan);
             color: var(--bg-primary);
+            transform: scale(1.1) rotate(5deg);
         }
 
         .btn-icon.danger:hover {
             background: var(--accent-red);
+            transform: scale(1.1);
         }
 
         /* 任务队列 */
@@ -414,6 +485,7 @@
             font-size: 12px;
             font-family: 'JetBrains Mono', monospace;
             color: var(--accent-cyan);
+            transition: all 0.3s ease;
         }
 
         .task-list {
@@ -436,6 +508,11 @@
         .task-list::-webkit-scrollbar-thumb {
             background: var(--border);
             border-radius: 3px;
+            transition: background 0.3s ease;
+        }
+
+        .task-list::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-cyan);
         }
 
         .task-item {
@@ -446,11 +523,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .task-item:hover {
             border-color: var(--accent-cyan);
+            transform: translateX(4px);
         }
 
         .task-id {
@@ -467,6 +545,7 @@
             padding: 4px 10px;
             border-radius: 6px;
             font-weight: 500;
+            animation: fadeIn 0.3s ease;
         }
 
         .task-status.queued {
@@ -477,21 +556,6 @@
         .task-status.dispatched {
             background: rgba(88, 166, 255, 0.15);
             color: var(--accent-blue);
-        }
-
-        .task-status.running {
-            background: rgba(210, 153, 34, 0.15);
-            color: var(--accent-yellow);
-        }
-
-        .task-status.completed {
-            background: rgba(63, 185, 80, 0.15);
-            color: var(--accent-green);
-        }
-
-        .task-status.failed {
-            background: rgba(248, 81, 73, 0.15);
-            color: var(--accent-red);
         }
 
         .empty-state {
@@ -508,14 +572,20 @@
 
         /* 添加后端表单 */
         .add-backend-form {
-            display: none;
-            padding: 20px 24px;
-            border-top: 1px solid var(--border);
+            max-height: 0;
+            overflow: hidden;
+            padding: 0 24px;
+            border-top: 1px solid transparent;
             background: var(--bg-secondary);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
         }
 
         .add-backend-form.show {
-            display: block;
+            max-height: 300px;
+            padding: 20px 24px;
+            border-top-color: var(--border);
+            opacity: 1;
         }
 
         .form-row {
@@ -544,13 +614,14 @@
             color: var(--text-primary);
             font-family: 'JetBrains Mono', monospace;
             font-size: 14px;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
         }
 
         .form-group input:focus {
             outline: none;
             border-color: var(--accent-cyan);
             box-shadow: 0 0 0 3px rgba(57, 197, 187, 0.1);
+            transform: translateY(-1px);
         }
 
         .form-actions {
@@ -574,69 +645,101 @@
             color: var(--text-secondary);
             font-size: 13px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .strategy-btn:hover {
             border-color: var(--accent-cyan);
             color: var(--text-primary);
+            transform: translateY(-2px);
         }
 
         .strategy-btn.active {
             background: var(--accent-cyan);
             color: var(--bg-primary);
             border-color: var(--accent-cyan);
+            box-shadow: 0 4px 12px rgba(57, 197, 187, 0.3);
         }
 
-        /* 实时日志 */
-        .log-container {
-            background: var(--bg-secondary);
-            border-radius: 8px;
-            padding: 16px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 12px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .log-entry {
-            padding: 4px 0;
-            border-bottom: 1px solid var(--border);
+        /* Toast通知 */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 1000;
             display: flex;
+            flex-direction: column;
             gap: 12px;
         }
 
-        .log-entry:last-child {
-            border-bottom: none;
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent-cyan);
+            border-radius: 8px;
+            padding: 16px 20px;
+            min-width: 300px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            animation: slideInRight 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .log-time {
-            color: var(--text-muted);
-            flex-shrink: 0;
+        .toast.success {
+            border-left-color: var(--accent-green);
         }
 
-        .log-message {
-            color: var(--text-secondary);
+        .toast.error {
+            border-left-color: var(--accent-red);
         }
 
-        .log-message.success { color: var(--accent-green); }
-        .log-message.error { color: var(--accent-red); }
-        .log-message.info { color: var(--accent-cyan); }
+        .toast.warning {
+            border-left-color: var(--accent-yellow);
+        }
+
+        .toast-icon {
+            font-size: 20px;
+        }
+
+        .toast-message {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        /* 骨架屏加载 */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-card-hover) 50%, var(--bg-secondary) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        .skeleton-card {
+            height: 120px;
+            margin-bottom: 12px;
+        }
 
         /* 动画 */
         @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(0.95); }
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { box-shadow: 0 0 12px var(--accent-green); }
+            50% { box-shadow: 0 0 20px var(--accent-green); }
+        }
+
+        @keyframes statusBlink {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
 
-        .loading {
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes slideIn {
+        @keyframes slideDown {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(-20px);
             }
             to {
                 opacity: 1;
@@ -644,12 +747,62 @@
             }
         }
 
-        .animate-in {
-            animation: slideIn 0.3s ease forwards;
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .loading {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .rotating {
+            animation: rotate 1s linear infinite;
         }
     </style>
 </head>
 <body>
+    <div class="toast-container" id="toast-container"></div>
+    
     <div class="container">
         <!-- 头部 -->
         <header>
@@ -663,7 +816,7 @@
             <div class="header-actions">
                 <span class="refresh-info">自动刷新: <span id="refresh-countdown">5</span>s</span>
                 <button class="btn btn-secondary" onclick="refreshData()">
-                    <span>🔄</span> 刷新
+                    <span id="refresh-icon">🔄</span> 刷新
                 </button>
                 <button class="btn btn-primary" onclick="triggerHealthCheck()">
                     <span>💓</span> 健康检查
@@ -738,10 +891,8 @@
 
                 <div class="panel-body">
                     <div class="backend-list" id="backend-list">
-                        <div class="empty-state loading">
-                            <div class="icon">⏳</div>
-                            <p>加载中...</p>
-                        </div>
+                        <div class="skeleton skeleton-card"></div>
+                        <div class="skeleton skeleton-card"></div>
                     </div>
                 </div>
             </div>
@@ -807,12 +958,43 @@
         const API_BASE = '';
         let refreshInterval = null;
         let countdown = 5;
+        let isUserInteracting = false;
+
+        // Toast通知系统
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icons = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️',
+                info: 'ℹ️'
+            };
+            
+            toast.innerHTML = `
+                <span class="toast-icon">${icons[type] || icons.info}</span>
+                <span class="toast-message">${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
 
         // 初始化
         document.addEventListener('DOMContentLoaded', () => {
             refreshData();
             startAutoRefresh();
             initStrategyButtons();
+            
+            // 检测用户交互
+            ['mousedown', 'keydown', 'scroll'].forEach(event => {
+                document.addEventListener(event, () => {
+                    isUserInteracting = true;
+                    setTimeout(() => isUserInteracting = false, 2000);
+                });
+            });
         });
 
         // 自动刷新
@@ -821,15 +1003,20 @@
             refreshInterval = setInterval(() => {
                 countdown--;
                 document.getElementById('refresh-countdown').textContent = countdown;
-                if (countdown <= 0) {
+                if (countdown <= 0 && !isUserInteracting) {
                     refreshData();
                     countdown = 5;
+                } else if (countdown <= 0) {
+                    countdown = 5; // 重置倒计时但不刷新
                 }
             }, 1000);
         }
 
         // 刷新数据
         async function refreshData() {
+            const refreshIcon = document.getElementById('refresh-icon');
+            refreshIcon.classList.add('rotating');
+            
             try {
                 const [stats, tasks, scheduler] = await Promise.all([
                     fetch(`${API_BASE}/lb/stats`).then(r => r.json()),
@@ -843,16 +1030,30 @@
                 updateStrategyButtons(scheduler.strategy);
             } catch (error) {
                 console.error('刷新失败:', error);
+                showToast('数据刷新失败，请检查连接', 'error');
+            } finally {
+                refreshIcon.classList.remove('rotating');
             }
         }
 
         // 更新统计
         function updateStats(stats) {
-            document.getElementById('stat-total').textContent = stats.total_backends;
-            document.getElementById('stat-healthy').textContent = stats.healthy_backends;
-            document.getElementById('stat-idle').textContent = stats.idle_backends;
-            document.getElementById('stat-pending').textContent = stats.queue_status.pending;
-            document.getElementById('stat-dispatched').textContent = stats.queue_status.dispatched;
+            const elements = {
+                'stat-total': stats.total_backends,
+                'stat-healthy': stats.healthy_backends,
+                'stat-idle': stats.idle_backends,
+                'stat-pending': stats.queue_status.pending,
+                'stat-dispatched': stats.queue_status.dispatched
+            };
+            
+            Object.entries(elements).forEach(([id, value]) => {
+                const el = document.getElementById(id);
+                if (el.textContent !== value.toString()) {
+                    el.style.transform = 'scale(1.2)';
+                    setTimeout(() => el.style.transform = 'scale(1)', 300);
+                }
+                el.textContent = value;
+            });
         }
 
         // 更新后端列表
@@ -869,8 +1070,8 @@
                 return;
             }
 
-            container.innerHTML = backends.map(backend => `
-                <div class="backend-item animate-in">
+            container.innerHTML = backends.map((backend, index) => `
+                <div class="backend-item" style="animation-delay: ${index * 0.05}s">
                     <div class="backend-status ${backend.status}"></div>
                     <div class="backend-info">
                         <h4>${backend.name}</h4>
@@ -940,9 +1141,11 @@
         async function setStrategy(strategy) {
             try {
                 await fetch(`${API_BASE}/lb/scheduler/strategy/${strategy}`, { method: 'POST' });
+                showToast(`调度策略已切换为: ${strategy}`, 'success');
                 refreshData();
             } catch (error) {
                 console.error('设置策略失败:', error);
+                showToast('设置策略失败', 'error');
             }
         }
 
@@ -950,9 +1153,11 @@
         async function triggerHealthCheck() {
             try {
                 await fetch(`${API_BASE}/lb/health-check`, { method: 'POST' });
-                refreshData();
+                showToast('健康检查已触发', 'success');
+                setTimeout(refreshData, 500);
             } catch (error) {
                 console.error('健康检查失败:', error);
+                showToast('健康检查失败', 'error');
             }
         }
 
@@ -969,7 +1174,7 @@
             const port = parseInt(document.getElementById('backend-port').value);
 
             if (!name || !host || !port) {
-                alert('请填写完整信息');
+                showToast('请填写完整信息', 'warning');
                 return;
             }
 
@@ -979,12 +1184,14 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, host, port, weight: 1, max_queue: 10, enabled: true })
                 });
+                showToast(`后端 "${name}" 添加成功`, 'success');
                 toggleAddForm();
                 document.getElementById('backend-name').value = '';
                 document.getElementById('backend-port').value = '';
                 refreshData();
             } catch (error) {
                 console.error('添加后端失败:', error);
+                showToast('添加后端失败', 'error');
             }
         }
 
@@ -994,9 +1201,11 @@
             
             try {
                 await fetch(`${API_BASE}/lb/backends/${name}`, { method: 'DELETE' });
+                showToast(`后端 "${name}" 已移除`, 'success');
                 refreshData();
             } catch (error) {
                 console.error('移除后端失败:', error);
+                showToast('移除后端失败', 'error');
             }
         }
 
@@ -1005,12 +1214,13 @@
             try {
                 const action = enable ? 'enable' : 'disable';
                 await fetch(`${API_BASE}/lb/backends/${name}/${action}`, { method: 'POST' });
+                showToast(`后端 "${name}" 已${enable ? '启用' : '禁用'}`, 'success');
                 refreshData();
             } catch (error) {
                 console.error('操作失败:', error);
+                showToast('操作失败', 'error');
             }
         }
     </script>
 </body>
 </html>
-
